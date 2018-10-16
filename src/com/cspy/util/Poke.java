@@ -105,7 +105,7 @@ public class Poke {
         }
     }
 
-    public static ArrayList<Poke> getPokePacks(int packs) {
+    public static List<Poke> getPokePacks(int packs) {
         if (packs > 0) {
             Poke[] pokes = new Poke[packs * NUM_OF_PACK];
             for (int k = 0; k < packs; k++) {
@@ -124,24 +124,41 @@ public class Poke {
         }
     }
 
-    public static ArrayList<Poke> getRandomPokes(int packs) {
-        ArrayList<Poke> pokeList = getPokePacks(packs);
+    public static List<Poke> getRandomPokes(int packs) {
+        List<Poke> pokeList = getPokePacks(packs);
         Collections.shuffle(pokeList);
         return pokeList;
+    }
+
+    public static Poke getSmallKing() {
+        return new Poke(pokeNumber.length,-1);
+    }
+
+    public static Poke getBigKing() {
+        return new Poke(pokeNumber.length + 1,-1);
     }
 
     @Override
     public String toString() {
         JSONObject show = new JSONObject();
         show.put("数字", getNumberShow());
-        show.put("原数字", getNumber());
+        show.put("数字index", getNumber());
         show.put("花色", getPatternShow());
-        show.put("原花色", getPattern());
+        show.put("花色index", getPattern());
         show.put("特殊", special);
         if (special) {
             show.put("更改后数字", getChangedNumber());
             show.put("更改后图案", getChangedPattern());
         }
         return "该扑克属性为：" + show.toString();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj instanceof Poke) {
+            return this.getNumber() == ((Poke) obj).getNumber() && this.getPattern() == ((Poke) obj).getPattern();
+        } else {
+            return false;
+        }
     }
 }

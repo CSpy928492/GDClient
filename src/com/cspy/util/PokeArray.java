@@ -18,24 +18,22 @@ public class PokeArray {
         return containList;
     }
 
-    public int getNumber() {
-        if(containList.size() != 0) {
-            return containList.get(0).getNumber();
-        } else {
-            return -1;
-        }
-    }
+
 
     public int getSize() {
         return containList.size();
     }
 
     public Poke getOne() {
-        return containList.get(0);
+        if(containList.size() != 0) {
+            return containList.get(0);
+        } else {
+            return new Poke();
+        }
     }
 
     @Override
     public String toString() {
-        return "<"+getNumber()+">" + containList.toString();
+        return "<"+getOne().getNumber()+">" + containList.toString();
     }
 }
