@@ -11,17 +11,26 @@ import java.util.List;
 public class TestClass {
     public static void main(String[] args) {
         List<Poke> pokes = new ArrayList<>();
-        pokes.add(new Poke(8, 1));
+        pokes.add(new Poke(10, 1));
+
+        pokes.add(new Poke(10, 1));
+
         pokes.add(new Poke(11, 1));
-        pokes.add(new Poke(12, 1));
+        pokes.add(new Poke(11, 0));
 //        pokes.add(new Poke(6, 1));
-        pokes.add(new Poke(2, 0));
-        pokes.add(new Poke(2, 0));
+//        pokes.add(new Poke(7, 0));
+//        pokes.add(new Poke(2, 0));
 
 
         PokeGroup pg = new PokeGroup(pokes);
-        pg.analysisGroup(2);
+        List<PokeArray> array = pg.getCoupleTripleRequirements(PokeGroup.getPurePoke(2,pokes));
 
+        for(PokeArray pokeArray:array) {
+            System.out.println("以下为解决方案");
+            for (Poke poke:pokeArray.getContainList()) {
+                System.out.println(poke);
+            }
+        }
 //        int repeat = 6;
 //        List<PokeArray> pureArray = PokeGroup.getPurePoke(2,pokes);
 //        List<Poke> repeatRequirement = PokeGroup.getRepeatRequirement(repeat, pureArray);
@@ -38,10 +47,7 @@ public class TestClass {
 
     }
 
-    public static void changeArray(int[] ints) {
-        ints[0] = 9999;
-        System.out.println("改变：" + Arrays.toString(ints));
-    }
+
 
 
 

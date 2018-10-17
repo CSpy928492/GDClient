@@ -16,7 +16,6 @@ public class Poke {
 
     public static final int NUM_OF_PACK = 54;
 
-
     public static String[] pokeNumber = {"2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"};
     //-小王   +大王
     //number（下标）接上面的数组
