@@ -2,36 +2,53 @@ package com.cspy.util;
 
 import com.alibaba.fastjson.JSONObject;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class PokeGroup {
     Type type;
+    int specialNumber;
 
     private List<Poke> group;
 
-    public PokeGroup(List<Poke> group) {
+    public PokeGroup(List<Poke> group, int specialNumber) {
         this.group = group;
+        this.specialNumber = specialNumber;
     }
 
     public List<Poke> getGroup() {
         return group;
     }
 
-    public JSONObject analysisGroup(int specialNumber) {
-        JSONObject result = new JSONObject();
-        List<Poke> list = null;
+    public List<JSONObject> analysisGroup(int specialNumber) {
+        List<JSONObject> pokeList = new ArrayList<>();
+        PokeArray array = new PokeArray();
+
+        List<PokeArray> pureArray = getPurePoke(specialNumber, group);
+        List<PokeArray> requirements = null;
+        List<Poke> haveSpecialPoke = getSpecialPoke(specialNumber, group);
 
         switch (group.size()) {
             case 1:
+                JSONObject r1 = new JSONObject();
                 type = Type.ONE;
-                result.put("结果", type.getName());
-                break;
+                r1.put("结果", type.getName());
+                array.getContainList().add(group.get(0));
+                r1.put("牌",array);
+                pokeList.add(r1);
+                return pokeList;
             case 2:
-                result = isTWO(specialNumber);
+                requirements = getRepeatRequirement(2,pureArray,specialNumber);
+                List<PokeArray> changedGroup = meetRq(haveSpecialPoke,specialNumber,requirements,pureArray);
+                JSONObject r2 = new JSONObject();
+                if (changedGroup != null) {
+                    type = Type.TWO;
+                    r2.put("结果",type.getName());
+
+
+                } else {
+                    type = Type.INVALID;
+                }
+                printList(changedGroup);
                 break;
             case 3:
                 break;
@@ -40,9 +57,9 @@ public class PokeGroup {
             case 5:
                 List<PokeArray> requirement = getFlowRequirement(getPurePoke(specialNumber, group));
                 System.out.println("requirement:");
-                for (PokeArray array : requirement) {
+                for (PokeArray array1 : requirement) {
                     System.out.println("这是一个方案：");
-                    for (Poke p : array.getContainList()) {
+                    for (Poke p : array1.getContainList()) {
                         System.out.println(p);
                     }
                 }
@@ -51,10 +68,105 @@ public class PokeGroup {
                 break;
             default:
                 type = Type.INVALID;
-                result.put("结果", type.getName());
         }
-        return result;
+        return null;
     }
+
+    public void printList(List<PokeArray> arrayList) {
+        System.out.println("当前PokeArray为");
+        for(PokeArray array:arrayList) {
+            for (Poke poke : array.getContainList()) {
+                System.out.println(poke);
+            }
+        }
+        System.out.println("打印结束\n");
+    }
+
+
+    //检查类型，默认红桃已经改变
+//    public List<JSONObject> checkType(List<PokeArray> pokeArrays) {
+//        List<JSONObject> typeResult = new ArrayList<>();
+//        JSONObject s1 = new JSONObject(), s2 = new JSONObject(), s3 = new JSONObject(), s4 = new JSONObject();
+//        List<Poke> pokes = new ArrayList<>();
+//
+//        for(PokeArray pokeArray:pokeArrays) {
+//            switch (pokeArray.getSize()) {
+//
+//            }
+//        }
+//    }
+
+//    private Type getType(PokeArray array) {
+//        List<Poke> list = array.getContainList();
+//        list.sort(Poke::compareTo);
+//
+//        int pattern = array.getOne().getPattern();
+//        boolean samePattern = true;
+//
+//        switch (array.getSize()) {
+//            case 1:
+//                return Type.ONE;
+//            case 2:
+//
+//
+//                break;
+//            case 3:
+//                break;
+//            case 4:
+//                break;
+//            case 5:
+//                break;
+//            case 6:
+//                break;
+//            default:
+//
+//
+//        }
+//
+//    }
+
+    public boolean isRepeat(PokeArray pokeArray) {
+        pokeArray.getContainList().sort(Poke::compareTo);
+        if(pokeArray.get(0).compareTo(pokeArray.get(pokeArray.getSize() - 1)) == 0) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
+    //满足需求，并返回满足需求后的所有可能
+    private List<PokeArray> meetRq(List<Poke> haveSpecialPoke, int specialNumber, List<PokeArray> rq, List<PokeArray> pureList) {
+        List<PokeArray> meets = new ArrayList<>();
+        List<Poke> mergedPure = mergePure(pureList,specialNumber);
+        for (PokeArray array:rq) {
+            boolean allMeets = true;
+            List<Poke> sp = new ArrayList<>();
+            for (Poke poke:haveSpecialPoke) {
+                sp.add(poke.clone(specialNumber));
+            }
+            allMeets = array.compareArray(sp);
+            if (allMeets) {
+                PokeArray s1 = new PokeArray();
+                s1.addAll(sp);
+                s1.addAll(mergedPure);
+                meets.add(s1);
+            }
+        }
+        return meets;
+    }
+
+    private List<Poke> mergePure(List<PokeArray> pureArray,int specialNum) {
+        List<Poke> mergeArray = new ArrayList<>();
+        for(PokeArray array:pureArray) {
+            for (Poke poke:array.getContainList()) {
+                mergeArray.add(poke.clone(specialNum));
+            }
+//            mergeArray.addAll(array.getContainList());
+        }
+        return mergeArray;
+    }
+
 
     //判断是否成对
     public JSONObject isTWO(int specialNumber) {
@@ -102,38 +214,50 @@ public class PokeGroup {
 
 
     //判断是否是王炸
-    public boolean isWangBoom(List<PokeArray> clearPoke) {
+    public List<JSONObject> isWangBoom(List<PokeArray> clearPoke) {
+        List<JSONObject> result = new ArrayList<>();
+        JSONObject object = new JSONObject();
         if (clearPoke.size() == 2) {
             for (PokeArray array : clearPoke) {
                 int arrayName = array.getOne().getNumber();
                 if (!(arrayName == Poke.getSmallKing().getNumber()
                         || arrayName == Poke.getBigKing().getNumber())
                         || array.getSize() != 2) {
-                    return false;
+                    object.put("type",Type.INVALID);
+                    result.add(object);
+                    return result;
                 }
             }
-            return true;
+            object.put("type",Type.WANG_BOOM);
+            object.put("value",mergePure(clearPoke,specialNumber).toString());
+            result.add(object);
+            return result;
         }
-        return false;
+        object.put("type",Type.INVALID);
+        result.add(object);
+        return result;
     }
 
 
     //判断三带二
-    public List<PokeArray> getThreeWithTwoRequirements(List<PokeArray> pureList, int specialNum) {
+    public List<JSONObject> getThreeWithTwoRequirements(int specialNum) {
         List<PokeArray> solutions = new ArrayList<>();
+        List<Poke> specialList = getAllSpecial(specialNum,group);
+        List<PokeArray> pureList = getPurePoke(specialNum,group);
+
 
         switch (pureList.size()) {
             case 1:
+                //3 0   情况
                 int fixNum = 3 - pureList.get(0).getSize();
-                List<Poke> fix = getByNumber(fixNum, pureList.get(0).getOne());
 
                 PokeArray a1 = new PokeArray();
                 a1.getContainList().addAll(getByNumber(2, Poke.getSmallKing()));
-                a1.getContainList().addAll(fix);
+                a1.getContainList().addAll(getByNumber(fixNum, pureList.get(0).getOne()));
                 solutions.add(a1);
                 PokeArray a2 = new PokeArray();
                 a2.getContainList().addAll(getByNumber(2, Poke.getBigKing()));
-                a2.getContainList().addAll(fix);
+                a2.getContainList().addAll(getByNumber(fixNum, pureList.get(0).getOne()));
                 solutions.add(a2);
                 if (fixNum == 0) {
                     PokeArray a3 = new PokeArray();
@@ -141,14 +265,44 @@ public class PokeGroup {
                     a3.getContainList().add(new Poke(specialNum, 0));
                     solutions.add(a3);
                 }
-                return solutions;
+                break;
+//                return solutions;
             case 2:
                 solutions = fixThreeWithTwo(pureList);
-                return solutions;
-            default:
-                return null;
+//                return solutions;
         }
+        List<JSONObject> result = new ArrayList<>();
+        if(solutions != null) {
+            for (PokeArray array : solutions) {
+                List<Poke> sl = cloneArray(specialList, specialNum);
+                if (array.compareArray(sl)) {
+                    JSONObject object = new JSONObject();
+                    object.put("type",Type.THREE_WITH_TWO);
+                    List<Poke> list = mergePure(pureList,specialNum);
+                    list.addAll(sl);
+                    object.put("value", list.toString());
+                    result.add(object);
+                } else {
+                    JSONObject invalidResult = new JSONObject();
+                    invalidResult.put("type",Type.INVALID);
+                    result.add(invalidResult);
+                }
+            }
+        } else {
+            JSONObject invalidResult = new JSONObject();
+            invalidResult.put("type",Type.INVALID);
+            result.add(invalidResult);
+        }
+        return result;
+    }
 
+    //复制List
+    private List<Poke> cloneArray(List<Poke> pokeList, int specialNumber) {
+        List<Poke> cloneArray = new ArrayList<>();
+        for(Poke poke:pokeList) {
+            cloneArray.add(poke.clone(specialNumber));
+        }
+        return cloneArray;
     }
 
     //根据数字返回相同的牌
@@ -164,7 +318,7 @@ public class PokeGroup {
     private List<PokeArray> fixThreeWithTwo(List<PokeArray> unfixedList) {
         if (unfixedList.size() == 2) {
             int count = 0;
-            int index = 0;
+            int index = -1;
             for (int i = 0; i < unfixedList.size(); i++) {
                 PokeArray array = unfixedList.get(i);
                 count += array.getSize();
@@ -176,6 +330,7 @@ public class PokeGroup {
             //只能是3或4，否则返回错误
             switch (count) {
                 case 3:
+                    //1 2   情况
                     PokeArray s1 = new PokeArray();
                     s1.getContainList().add(unfixedList.get(0).getOne());
                     s1.getContainList().add(unfixedList.get(1).getOne());
@@ -186,12 +341,20 @@ public class PokeGroup {
                     fixed.add(s2);
                     return fixed;
                 case 4:
-                    PokeArray s3 = new PokeArray();
-                    s3.getContainList().add(unfixedList.get(0).getOne());
-                    fixed.add(s3);
-                    PokeArray s4 = new PokeArray();
-                    s4.getContainList().add(unfixedList.get(1).getOne());
-                    fixed.add(s4);
+                    //2 2   情况
+                    if (index == -1) {
+                        PokeArray s3 = new PokeArray();
+                        s3.getContainList().add(unfixedList.get(0).getOne());
+                        fixed.add(s3);
+                        PokeArray s4 = new PokeArray();
+                        s4.getContainList().add(unfixedList.get(1).getOne());
+                        fixed.add(s4);
+                    } else {
+                        //1 3   情况
+                        PokeArray s5 = new PokeArray();
+                        s5.addAll(getByNumber(1,unfixedList.get(index).getOne()));
+                        fixed.add(s5);
+                    }
                     return fixed;
                 default:
                     return null;
@@ -315,7 +478,7 @@ public class PokeGroup {
 
 
     //返回特殊数字（红心）的集合，当specialNum不是正常数字的时候（而是大小王），返回错误
-    public static ArrayList<Poke> getSpecialPoke(int specialNum, List<Poke> group) {
+    public List<Poke> getSpecialPoke(int specialNum, List<Poke> group) {
         ArrayList<Poke> list = null;
         if (specialNum > -1 && specialNum < Poke.pokeNumber.length) {
             list = new ArrayList();
@@ -334,10 +497,22 @@ public class PokeGroup {
         return list;
     }
 
+    public List<Poke> getAllSpecial(int specialNum, List<Poke> group) {
+        List<Poke> allSpecial = new ArrayList<>();
+        for (Poke poke:group) {
+            if(poke.equals(Poke.getSmallKing()) || poke.equals(Poke.getBigKing()
+            )|| poke.equals(new Poke(specialNum,0))) {
+                allSpecial.add(poke);
+            }
+        }
+        return allSpecial;
+
+    }
+
     //返回整理之后的牌
-    public static ArrayList<PokeArray> getPokeClear(int specialNum, List<Poke> group) {
+    public List<PokeArray> getPokeClear(int specialNum, List<Poke> group) {
         //先把特殊的红桃提取出来
-        ArrayList<Poke> specialArray = getSpecialPoke(specialNum, group);
+        List<Poke> specialArray = getSpecialPoke(specialNum, group);
 
         ArrayList<PokeArray> arrays = new ArrayList<>();
         for (Poke poke : group) {
@@ -375,7 +550,7 @@ public class PokeGroup {
     }
 
     //返回不带特殊红桃牌和大小王的列表
-    public static List<PokeArray> getPurePoke(int specialNum, List<Poke> group) {
+    public List<PokeArray> getPurePoke(int specialNum, List<Poke> group) {
         List<PokeArray> purePoke = getPokeClear(specialNum, group);
         Poke lastPoke = purePoke.get(purePoke.size() - 1).getOne();
         //去掉特殊红桃牌
@@ -402,12 +577,28 @@ public class PokeGroup {
      * @param pureArray 必须传入不包含红桃和大小王的牌组
      * @return 返回所需牌组列表，可能是多种可能
      */
-    public static List<PokeArray> getRepeatRequirement(int repeat, List<PokeArray> pureArray) {
+    public List<PokeArray> getRepeatRequirement(int repeat, List<PokeArray> pureArray, int specialNumber) {
         if (pureArray == null) {
             return null;
         }
         if (pureArray.size() != 1) {
-            return null;
+            if(repeat == 2) {
+                List<PokeArray> solutions = new ArrayList<>();
+                PokeArray s1 = new PokeArray();
+                s1.getContainList().addAll(getByNumber(2,new Poke(specialNumber,1)));
+                solutions.add(s1);
+
+                PokeArray s2 = new PokeArray();
+                s2.getContainList().addAll(getByNumber(2,Poke.getSmallKing()));
+                solutions.add(s2);
+
+                PokeArray s3 = new PokeArray();
+                s3.getContainList().addAll(getByNumber(2,Poke.getBigKing()));
+                solutions.add(s3);
+                return solutions;
+            } else {
+                return null;
+            }
         } else {
             PokeArray onlyPokeArray = pureArray.get(0);
             int left = repeat - onlyPokeArray.getSize();
@@ -432,7 +623,7 @@ public class PokeGroup {
      * @param pureArray 不包括大小王和红桃
      * @return 返回顺子或者顺金缺的牌
      */
-    public static List<PokeArray> getFlowRequirement(List<PokeArray> pureArray) {
+    public List<PokeArray> getFlowRequirement(List<PokeArray> pureArray) {
         if (pureArray == null) {
             return null;
         }
@@ -504,7 +695,7 @@ public class PokeGroup {
     }
 
     //只补空缺
-    public static List<Integer> fixArrays(List<Integer> list) {
+    public List<Integer> fixArrays(List<Integer> list) {
         list.sort(Integer::compareTo);
         int difference = list.get(list.size() - 1) - list.get(0);
         if (difference + 1 == list.size()) {
@@ -524,7 +715,7 @@ public class PokeGroup {
         }
     }
 
-    public static List<List<Integer>> appendArrays(List<Integer> missEndArray, int min, int max) {
+    public List<List<Integer>> appendArrays(List<Integer> missEndArray, int min, int max) {
         int size = missEndArray.size();
         if (size < 6 && size > 2) {
             missEndArray.sort(Integer::compareTo);
@@ -576,7 +767,6 @@ public class PokeGroup {
         List<Poke> pokeList = new ArrayList<>();
         int p = (pattern + 1) % Poke.pokePattern.length;
         for (Integer i : numList) {
-            //默认花色为1
             Poke poke = new Poke(i, samePattern ? pattern : p);
             pokeList.add(poke);
         }

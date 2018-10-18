@@ -1,5 +1,6 @@
 package com.cspy;
 
+import com.alibaba.fastjson.JSONObject;
 import com.cspy.util.Poke;
 import com.cspy.util.PokeArray;
 import com.cspy.util.PokeGroup;
@@ -11,26 +12,30 @@ import java.util.List;
 public class TestClass {
     public static void main(String[] args) {
         List<Poke> pokes = new ArrayList<>();
-        pokes.add(new Poke(10, 1));
+        pokes.add(new Poke(13, -1));
 
-        pokes.add(new Poke(10, 1));
+        pokes.add(new Poke(13, -1));
+//        pokes.add(new Poke(13, -1));
 
-        pokes.add(new Poke(11, 1));
-        pokes.add(new Poke(11, 0));
-//        pokes.add(new Poke(6, 1));
-//        pokes.add(new Poke(7, 0));
+//        pokes.add(new Poke(11, 1));
+//        pokes.add(new Poke(11, 0));
+        pokes.add(new Poke(14, -1));
+        pokes.add(new Poke(14, -1));
 //        pokes.add(new Poke(2, 0));
 
 
-        PokeGroup pg = new PokeGroup(pokes);
-        List<PokeArray> array = pg.getCoupleTripleRequirements(PokeGroup.getPurePoke(2,pokes));
+        PokeGroup pg = new PokeGroup(pokes,2);
+        List<JSONObject> result = pg.isWangBoom(pg.getPokeClear(2,pokes));
+        printResult(result);
+//        pg.analysisGroup(2);
+//        List<PokeArray> array = pg.getCoupleTripleRequirements(pg.getPurePoke(2,pokes));
 
-        for(PokeArray pokeArray:array) {
-            System.out.println("以下为解决方案");
-            for (Poke poke:pokeArray.getContainList()) {
-                System.out.println(poke);
-            }
-        }
+//        for(PokeArray pokeArray:array) {
+//            System.out.println("以下为解决方案");
+//            for (Poke poke:pokeArray.getContainList()) {
+//                System.out.println(poke);
+//            }
+//        }
 //        int repeat = 6;
 //        List<PokeArray> pureArray = PokeGroup.getPurePoke(2,pokes);
 //        List<Poke> repeatRequirement = PokeGroup.getRepeatRequirement(repeat, pureArray);
@@ -45,6 +50,13 @@ public class TestClass {
 //        }
 
 
+    }
+
+    public static void printResult(List<JSONObject> result) {
+        System.out.println("结果");
+        for(JSONObject object:result) {
+            System.out.println(object.toString());
+        }
     }
 
 

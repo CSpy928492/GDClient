@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class Poke {
+public class Poke implements Comparable<Poke> {
     private int number;
     private int pattern;
     private boolean special;
@@ -140,24 +140,71 @@ public class Poke {
     @Override
     public String toString() {
         JSONObject show = new JSONObject();
+        if(special) {
+            return "(*" + changedNumber +"," + changedPattern +"*)";
+        } else {
+            return "(" + number +"," + pattern +")";
+        }
+    }
+
+    public String toDetailedString() {
+        JSONObject show = new JSONObject();
         show.put("数字", getNumberShow());
         show.put("数字index", getNumber());
         show.put("花色", getPatternShow());
         show.put("花色index", getPattern());
         show.put("特殊", special);
         if (special) {
-            show.put("更改后数字", getChangedNumber());
-            show.put("更改后图案", getChangedPattern());
+            show.put("更改后数字index", getChangedNumber());
+            show.put("更改后图案index", getChangedPattern());
         }
         return "该扑克属性为：" + show.toString();
+
     }
+
+    public Poke clone(int specialNumber) {
+        Poke clonePoke = new Poke(number,pattern);
+        if (specialNumber == number && pattern == 0) {
+            clonePoke.special = true;
+        }
+        return clonePoke;
+    }
+
 
     @Override
     public boolean equals(Object obj) {
         if(obj instanceof Poke) {
-            return this.getNumber() == ((Poke) obj).getNumber() && this.getPattern() == ((Poke) obj).getPattern();
+            Poke anotherPoke = (Poke)obj;
+            return this.getNumber() == anotherPoke.getNumber() && this.getPattern() == anotherPoke.getPattern();
         } else {
             return false;
+        }
+    }
+
+    public boolean equal (Poke anotherPoke) {
+        if (special && anotherPoke.special) {
+            return true;
+        }
+//        if (special && anotherPoke.getNumber() < 13) {
+//            setChangedNumber(anotherPoke.getNumber());
+//            setChangedPattern(anotherPoke.getPattern());
+//            return true;
+//        }
+        if (anotherPoke.special && getNumber() < 13) {
+            anotherPoke.setChangedNumber(getNumber());
+            anotherPoke.setChangedPattern(getPattern());
+            return true;
+        }
+        return this.getNumber() == anotherPoke.getNumber() && this.getPattern() == anotherPoke.getPattern();
+    }
+
+
+    @Override
+    public int compareTo(Poke o) {
+        if(o.isSpecial()) {
+            return number - o.getChangedNumber();
+        } else {
+            return number - o.getNumber();
         }
     }
 }
