@@ -56,7 +56,14 @@ public class Poke implements Comparable<Poke> {
             }
         }
         return "无效数字";
+    }
 
+    public int getNumberWithSpecial() {
+        if (special) {
+            return changedNumber;
+        } else {
+            return number;
+        }
     }
 
     public int getPattern() {
