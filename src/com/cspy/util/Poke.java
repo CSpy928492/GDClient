@@ -13,6 +13,7 @@ public class Poke implements Comparable<Poke> {
     private boolean special;
     private int changedNumber;
     private int changedPattern;
+    private boolean changed;
 
     public static final int NUM_OF_PACK = 54;
 
@@ -20,7 +21,7 @@ public class Poke implements Comparable<Poke> {
     //-小王   +大王
     //number（下标）接上面的数组
     public static String[] pokeNumberAppend = {"-", "+"};
-    //分别表示：红桃   黑桃  黑花  方块
+    //分别表示：红桃  方块 黑桃  黑花
     public static String[] pokePattern = {"!", "@", "#", "$"};
 
     public Poke() {
@@ -48,6 +49,7 @@ public class Poke implements Comparable<Poke> {
 
     //返回显示中间值
     public String getNumberShow() {
+        int number = getNumberWithSpecial();
         if (number > -1) {
             if (number < pokeNumber.length) {
                 return pokeNumber[number];
@@ -55,14 +57,24 @@ public class Poke implements Comparable<Poke> {
                 return pokeNumberAppend[number - pokeNumber.length];
             }
         }
-        return "无效数字";
+        return "*";
     }
 
+
+
     public int getNumberWithSpecial() {
-        if (special) {
+        if (special && changed) {
             return changedNumber;
         } else {
             return number;
+        }
+    }
+
+    public int getPatternWithSpecial() {
+        if (special && changed) {
+            return changedPattern;
+        }else {
+            return pattern;
         }
     }
 
@@ -72,10 +84,11 @@ public class Poke implements Comparable<Poke> {
 
     //返回显示中间值
     public String getPatternShow() {
+        int pattern = getPatternWithSpecial();
         if (pattern > -1 && pattern < pokePattern.length) {
             return pokePattern[pattern];
         } else {
-            return "无效图案";
+            return "*";
         }
     }
 
@@ -97,9 +110,17 @@ public class Poke implements Comparable<Poke> {
     public void setChangedNumber(int changedNumber) {
         if (special) {
             this.changedNumber = changedNumber;
+            changed = true;
         }
     }
 
+    public boolean isChanged() {
+        return changed;
+    }
+
+    public void setChanged(boolean changed) {
+        this.changed = changed;
+    }
 
     public int getChangedPattern() {
         return changedPattern;
@@ -108,6 +129,7 @@ public class Poke implements Comparable<Poke> {
     public void setChangedPattern(int changedPattern) {
         if (special) {
             this.changedPattern = changedPattern;
+            changed = true;
         }
     }
 
@@ -146,7 +168,6 @@ public class Poke implements Comparable<Poke> {
 
     @Override
     public String toString() {
-        JSONObject show = new JSONObject();
         if(special) {
             return "(*" + changedNumber +"," + changedPattern +"*)";
         } else {

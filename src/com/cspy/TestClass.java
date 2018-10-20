@@ -5,30 +5,46 @@ import com.cspy.util.Poke;
 import com.cspy.util.PokeArray;
 import com.cspy.util.PokeGroup;
 
+import javax.swing.*;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class TestClass {
     public static void main(String[] args) {
-        List<Poke> pokes = new ArrayList<>();
-        pokes.add(new Poke(3, 0));
-        pokes.add(new Poke(2, 0));
 
-        pokes.add(new Poke(2, 0));
-//        pokes.add(new Poke(13, -1));
+        JFrame jFrame = new JFrame();
+        Poke poke = new Poke(8,0);
+        poke.setSpecial(true);
+        poke.setChangedNumber(2);
+        poke.setChangedPattern(3);
 
-        pokes.add(new Poke(4, 0));
-        pokes.add(new Poke(5, 1));
+        PokePanel pokePanel = new PokePanel(poke, 450);
+
+        jFrame.add(pokePanel);
+        jFrame.pack();
+        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+        jFrame.setVisible(true);
+
+//        List<Poke> pokes = new ArrayList<>();
+//        pokes.add(new Poke(3, 0));
+//        pokes.add(new Poke(2, 0));
+//
+//        pokes.add(new Poke(2, 0));
+////        pokes.add(new Poke(13, -1));
+//
+//        pokes.add(new Poke(4, 0));
+//        pokes.add(new Poke(5, 1));
 //        pokes.add(new Poke(11, 0));
 //        pokes.add(new Poke(8, 1));
 //        pokes.add(new Poke(8, 1));
 //        pokes.add(new Poke(2, 0));
 
 
-        PokeGroup pg = new PokeGroup(pokes,2);
-        List<JSONObject> result = pg.analysisGroup();
-        printResult(result);
+//        PokeGroup pg = new PokeGroup(pokes,2);
+//        List<JSONObject> result = pg.analysisGroup();
+//        printResult(result);
 //        pg.analysisGroup(2);
 //        List<PokeArray> array = pg.getCoupleTripleRequirements(pg.getPurePoke(2,pokes));
 
