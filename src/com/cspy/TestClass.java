@@ -2,27 +2,25 @@ package com.cspy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cspy.util.Poke;
-import com.cspy.util.PokeArray;
-import com.cspy.util.PokeGroup;
 
 import javax.swing.*;
-import java.awt.*;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class TestClass {
     public static void main(String[] args) {
 
         JFrame jFrame = new JFrame();
-        Poke poke = new Poke(8,0);
-        poke.setSpecial(true);
-        poke.setChangedNumber(2);
-        poke.setChangedPattern(3);
+//        Poke poke = new Poke(8,0);
+//        poke.setSpecial(true);
+//        poke.setChangedNumber(2);
+//        poke.setChangedPattern(3);
 
-        PokePanel pokePanel = new PokePanel(poke, 450);
+        List<Poke> pokes = Poke.getRandomPokes(1).subList(1,12);
+        HandPokePanel handPokePanel = new HandPokePanel(pokes,3,900);
 
-        jFrame.add(pokePanel);
+//        PokePanel pokePanel = new PokePanel(poke, 450);
+
+        jFrame.add(handPokePanel);
         jFrame.pack();
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);

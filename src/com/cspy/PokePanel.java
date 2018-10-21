@@ -13,6 +13,7 @@ public class PokePanel extends JPanel {
     JLabel mainLabel;
     JLabel smallPatternPanel;
     JLabel bigPatternPanel;
+    JLabel borderPanel;
 
     private Map<String, String> patternMap;
 
@@ -31,6 +32,7 @@ public class PokePanel extends JPanel {
 
     public PokePanel(Poke poke, int width) {
         Dimension dimension = new Dimension(width, width / 9 * 16);
+        System.out.println("卡片大小为：" + dimension.toString());
         this.setPreferredSize(dimension);
         this.poke = poke;
         initPanel();
@@ -41,8 +43,8 @@ public class PokePanel extends JPanel {
         JLayeredPane jLayeredPane = new JLayeredPane();
 
 
-        System.out.println("P宽度:" + getPreferredSize().width + "\nP高度:" + getPreferredSize().height);
-        System.out.println("宽度:" + getSize().width + "\n高度:" + getSize().height);
+//        System.out.println("P宽度:" + getPreferredSize().width + "\nP高度:" + getPreferredSize().height);
+//        System.out.println("宽度:" + getSize().width + "\n高度:" + getSize().height);
 
 
         if (poke != null) {
@@ -63,25 +65,45 @@ public class PokePanel extends JPanel {
                             getFileName(patternMap.get(poke.getPatternShow()), "大"),
                             new Dimension((preferredWidth / 3) * 2, preferredHeight / 3)));
                 }
+                borderPanel = new JLabel(getIcon(
+                        getFileName("纸牌边框",null),
+                        getPreferredSize()));
+
 
                 setLayout(new BorderLayout());
                 mainLabel.setBounds(0, 0, preferredWidth, preferredHeight);
                 smallPatternPanel.setBounds(0, (int) (0.1875 * preferredHeight), preferredWidth, (int) (preferredHeight * 0.625));
                 bigPatternPanel.setBounds(preferredWidth / 6, preferredHeight / 2 - (preferredWidth / 3), preferredWidth / 3 * 2, preferredWidth / 3 * 2);
+                borderPanel.setBounds(0, 0, preferredWidth, preferredHeight);
                 jLayeredPane.add(mainLabel);
                 jLayeredPane.add(bigPatternPanel);
                 jLayeredPane.add(smallPatternPanel);
+                jLayeredPane.add(borderPanel);
                 jLayeredPane.moveToBack(mainLabel);
                 jLayeredPane.moveToFront(smallPatternPanel);
                 jLayeredPane.moveToFront(bigPatternPanel);
+                jLayeredPane.moveToFront(borderPanel);
+                this.setOpaque(false);
                 this.add(jLayeredPane);
+
             } else {
+                jLayeredPane = new JLayeredPane();
                 mainLabel = new JLabel(getIcon(getFileName(patternMap.get(poke.getNumberShow()), null), getPreferredSize()));
                 mainLabel.setBounds(0, 0, getPreferredSize().width, getPreferredSize().height);
-                this.add(mainLabel);
+                borderPanel = new JLabel(getIcon(
+                        getFileName("纸牌边框",null),
+                        getPreferredSize()));
+                borderPanel.setBounds(0, 0, getPreferredSize().width, getPreferredSize().height);
+                jLayeredPane.add(mainLabel);
+                jLayeredPane.add(borderPanel);
+                jLayeredPane.moveToFront(mainLabel);
+                jLayeredPane.moveToFront(borderPanel);
+                this.setOpaque(false);
+                this.add(jLayeredPane);
             }
         } else {
             mainLabel = new JLabel(getIcon(getFileName("卡背", null), getPreferredSize()));
+            this.setOpaque(false);
             this.add(mainLabel);
         }
 
@@ -90,11 +112,11 @@ public class PokePanel extends JPanel {
 
     public ImageIcon getIcon(String fileName, Dimension dimension) {
         ImageIcon originalIcon = new ImageIcon(fileName);
-        System.out.println("原图片宽度:" + originalIcon.getIconWidth() + "\n原图片高度:" + originalIcon.getIconHeight());
+//        System.out.println("原图片宽度:" + originalIcon.getIconWidth() + "\n原图片高度:" + originalIcon.getIconHeight());
         Image image = originalIcon.getImage();
         image = image.getScaledInstance(dimension.width, dimension.height, Image.SCALE_AREA_AVERAGING);
         ImageIcon icon = new ImageIcon(image);
-        System.out.println("图片宽度:" + icon.getIconWidth() + "\n图片高度:" + icon.getIconHeight());
+//        System.out.println("图片宽度:" + icon.getIconWidth() + "\n图片高度:" + icon.getIconHeight());
         return icon;
     }
 
