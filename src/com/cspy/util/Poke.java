@@ -170,7 +170,11 @@ public class Poke implements Comparable<Poke> {
     @Override
     public String toString() {
         if(special) {
-            return "(*" + changedNumber +"," + changedPattern +"*)";
+            if (changed) {
+                return "(*" + changedNumber + "," + changedPattern + "*)";
+            } else {
+                return "*(" + number +"," + pattern +")";
+            }
         } else {
             return "(" + number +"," + pattern +")";
         }

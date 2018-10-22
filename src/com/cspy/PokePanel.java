@@ -109,9 +109,19 @@ public class PokePanel extends JPanel {
                 this.add(jLayeredPane);
             }
         } else {
+            setLayout(new BorderLayout());
             mainLabel = new JLabel(getIcon(getFileName("卡背", null), getPreferredSize()));
+            mainLabel.setBounds(0, 0, getPreferredSize().width, getPreferredSize().height);
+            borderPanel = new JLabel(getIcon(
+                    getFileName("纸牌边框",null),
+                    getPreferredSize()));
+            borderPanel.setBounds(0, 0, getPreferredSize().width, getPreferredSize().height);
+            jLayeredPane.add(mainLabel);
+            jLayeredPane.add(borderPanel);
+            jLayeredPane.moveToBack(mainLabel);
+            jLayeredPane.moveToFront(borderPanel);
             this.setOpaque(false);
-            this.add(mainLabel);
+            this.add(jLayeredPane);
         }
 
 

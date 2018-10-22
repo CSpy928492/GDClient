@@ -1,16 +1,14 @@
 package com.cspy;
 
-import com.alibaba.fastjson.JSONObject;
 import com.cspy.util.Poke;
 import com.cspy.util.PokeGroup;
+import com.cspy.util.Solution;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
-import java.util.Random;
 
 public class HandPokePanel extends JPanel implements MouseListener, MouseMotionListener, ActionListener {
 
@@ -32,10 +30,14 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
 
     List<Poke> allPokes;
 
-    public HandPokePanel(List<Poke> pokes, int specialNumber, int width, List<Poke> allPokes) {
+    public HandPokePanel(List<Poke> pokes, int specialNumber,Dimension dimension , List<Poke> allPokes) {
         if (pokes == null) {
             return;
         }
+
+        setOpaque(false);
+        setPreferredSize(dimension);
+        int width = dimension.width;
         this.specialNumber = specialNumber;
         this.allPokes = allPokes;
         pokePanels = new ArrayList<>();
@@ -72,7 +74,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
             pp.addMouseListener(this);
             pp.addMouseMotionListener(this);
         }
-        this.setPreferredSize(new Dimension(width, pokeGapWidth * 8));
+//        this.setPreferredSize(new Dimension(width, pokeGapWidth * 8));
         System.out.println("width=" + width + "  gapWidth=" + pokeGapWidth + "  共" + pokePanels.size() + "张牌");
         jLayeredPane = new JLayeredPane();
 
@@ -100,7 +102,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
     //根据pokePanels初始化面板
     private void initPanel(List<PokePanel> pokePanels) {
         if (pokeGapWidth != 0) {
-            this.setPreferredSize(new Dimension(pokeGapWidth * pokePanels.size() + 2,getPreferredSize().height));
+            this.setPreferredSize(new Dimension(pokeGapWidth * (pokePanels.size() + 2),getPreferredSize().height));
         }
         jLayeredPane.removeAll();
         repaint();
@@ -276,6 +278,18 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
         refreshPanel();
     }
 
+    //获取选择的牌
+    public List<Solution> getValidSolutions() {
+        List<Poke> pokes = new ArrayList<>();
+        for (PokePanel pp:selectedPanel) {
+            pokes.add(pp.getPoke());
+        }
+        PokeGroup pokeGroup = new PokeGroup(pokes,specialNumber);
+        List<Solution> resultList = pokeGroup.analysisGroup();
+        resultList.removeIf(Solution::isInvalid);
+        return resultList;
+    }
+
     //改变状态的那个牌
     private void addOrRemoveToSelect(PokePanel pp) {
         if (!selectedPanel.contains(pp)) {
@@ -333,11 +347,15 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                     pokes.add(pp.getPoke());
                 }
                 PokeGroup pokeGroup = new PokeGroup(pokes,specialNumber);
-                List<JSONObject> resultList = pokeGroup.analysisGroup();
+                List<Solution> resultList = pokeGroup.analysisGroup();
                 System.out.println("以下是结果");
-                for (JSONObject js: resultList) {
-                    System.out.println(js.toString());
+                for (Solution sl: resultList) {
+                    System.out.println(sl);
                 }
+                resultList = getValidSolutions();
+
+                ChooseDialog dialog = new ChooseDialog(resultList);
+                dialog.setVisible(true);
                 return;
 
 
@@ -389,6 +407,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
         }
 
     }
+
 
 
 }

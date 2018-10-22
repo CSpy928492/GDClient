@@ -19,38 +19,36 @@ public class PokeGroup {
         return group;
     }
 
-    public List<JSONObject> analysisGroup() {
-        List<JSONObject> pokeList = new ArrayList<>();
+    public List<Solution> analysisGroup() {
+        List<Solution> pokeList = new ArrayList<>();
         switch (group.size()) {
             case 1:
-                JSONObject r1 = new JSONObject();
-                r1.put("type", Type.ONE);
-                r1.put("value", group.get(0).toString());
-                pokeList.add(r1);
+                Solution s1 = new Solution(Type.ONE,group);
+                pokeList.add(s1);
                 return pokeList;
             case 2:
                 return getRepeatRequirement(2);
             case 3:
                 return getRepeatRequirement(3);
             case 4:
-                List<JSONObject> r4 = new ArrayList<>();
+                List<Solution> r4 = new ArrayList<>();
                 r4.add(WangBoom(getPokeClear()));
                 r4.addAll(getRepeatRequirement(4));
                 return r4;
             case 5:
-                List<JSONObject> r5 = new ArrayList<>();
-                r5.addAll(getThreeWithTwo(specialNumber));
+                List<Solution> r5 = new ArrayList<>();
+                r5.addAll(getThreeWithTwo());
                 r5.addAll(getFlow());
                 r5.addAll(getRepeatRequirement(5));
                 return r5;
             case 6:
-                List<JSONObject> r6 = new ArrayList<>();
+                List<Solution> r6 = new ArrayList<>();
                 r6.addAll(getCoupleTripleResult());
                 r6.addAll(getRepeatRequirement(6));
                 return r6;
             default:
-                List<JSONObject> rd = new ArrayList<>();
-                rd.add(getInValidJSON());
+                List<Solution> rd = new ArrayList<>();
+                rd.add(getInValidSolution());
                 return rd;
 
         }
@@ -68,34 +66,31 @@ public class PokeGroup {
     }
 
     //判断是否是王炸
-    public JSONObject WangBoom(List<PokeArray> clearPoke) {
-        JSONObject result = new JSONObject();
+    public Solution WangBoom(List<PokeArray> clearPoke) {
+        Solution result;
         if (clearPoke.size() == 2) {
             for (PokeArray array : clearPoke) {
                 int arrayName = array.getOne().getNumber();
                 if (!(arrayName == Poke.getSmallKing().getNumber()
                         || arrayName == Poke.getBigKing().getNumber())
                         || array.getSize() != 2) {
-                    result.put("type", Type.INVALID);
-                    return result;
+                    return getInValidSolution();
                 }
             }
-            result.put("type", Type.WANG_BOOM);
-            result.put("value", mergePure(clearPoke).toString());
+            result = new Solution(Type.WANG_BOOM,mergePure(clearPoke));
             return result;
         }
-        result.put("type", Type.INVALID);
-        return result;
+        return getInValidSolution();
     }
 
 
     //判断三带二
-    public List<JSONObject> getThreeWithTwo(int specialNum) {
+    public List<Solution> getThreeWithTwo() {
         List<PokeArray> solutions = new ArrayList<>();
         List<Poke> specialList = getAllSpecial();
         List<PokeArray> pureList = getPurePoke();
 
-        List<JSONObject> result = new ArrayList<>();
+        List<Solution> result = new ArrayList<>();
 
 
         switch (pureList.size()) {
@@ -103,7 +98,7 @@ public class PokeGroup {
                 //3 0   情况
                 int fixNum = 3 - pureList.get(0).getSize();
                 if (fixNum < 0) {
-                    result.add(getInValidJSON());
+                    result.add(getInValidSolution());
                     return result;
                 }
 
@@ -117,8 +112,8 @@ public class PokeGroup {
                 solutions.add(a2);
                 if (fixNum == 0) {
                     PokeArray a3 = new PokeArray();
-                    a3.getContainList().add(new Poke(specialNum, 0,true));
-                    a3.getContainList().add(new Poke(specialNum, 0,true));
+                    a3.getContainList().add(new Poke(specialNumber, 0,true));
+                    a3.getContainList().add(new Poke(specialNumber, 0,true));
                     solutions.add(a3);
                 }
                 break;
@@ -127,38 +122,27 @@ public class PokeGroup {
                 solutions = fixThreeWithTwo(pureList);
                 break;
                 default:
-                    JSONObject invalidResult = new JSONObject();
-                    invalidResult.put("type", Type.INVALID);
-                    result.add(invalidResult);
+                    result.add(getInValidSolution());
                     return result;
         }
         if (solutions != null) {
             for (PokeArray array : solutions) {
-                List<Poke> sl = cloneArray(specialList, specialNum);
+                List<Poke> sl = cloneArray(specialList, specialNumber);
                 if (array.compareArray(sl)) {
-                    JSONObject object = new JSONObject();
-                    object.put("type", Type.THREE_WITH_TWO);
                     List<Poke> list = mergePure(pureList);
                     list.addAll(sl);
-                    object.put("value", list.toString());
-                    result.add(object);
+                    Solution solution = new Solution(Type.THREE_WITH_TWO,list);
+                    result.add(solution);
                 } else {
-                    JSONObject invalidResult = new JSONObject();
-                    invalidResult.put("type", Type.INVALID);
-                    result.add(invalidResult);
+                    result.add(getInValidSolution());
                 }
             }
             if (solutions.size() == 0) {
-                JSONObject notFixedResult = new JSONObject();
-                notFixedResult.put("type", Type.THREE_WITH_TWO);
-                mergePure(pureList);
-                notFixedResult.put("value",mergePure(pureList).toString());
-                result.add(notFixedResult);
+                Solution solution = new Solution(Type.THREE_WITH_TWO,mergePure(pureList));
+                result.add(solution);
             }
         } else {
-            JSONObject invalidResult = new JSONObject();
-            invalidResult.put("type", Type.INVALID);
-            result.add(invalidResult);
+            result.add(getInValidSolution());
         }
         return result;
     }
@@ -244,19 +228,17 @@ public class PokeGroup {
     }
 
     //返回AAABBB AABBCC型
-    public List<JSONObject> getCoupleTripleResult() {
+    public List<Solution> getCoupleTripleResult() {
         List<Poke> specialList = getAllSpecial();
         List<PokeArray> pureList = getPurePoke();
-        List<JSONObject> result = new ArrayList<>();
+        List<Solution> result = new ArrayList<>();
 
         int cardNumber = getCardNumber(pureList);
         List<Integer> indexs = getIndexs(pureList);
         indexs.sort(Integer::compareTo);
         int difference = indexs.get(indexs.size() - 1) - indexs.get(0);
         if (cardNumber < 4 || cardNumber > 6 || (difference !=2 && difference!=1)) {
-            JSONObject invalidResult = new JSONObject();
-            invalidResult.put("type", Type.INVALID);
-            result.add(invalidResult);
+            result.add(getInValidSolution());
             return result;
         }
         //种类2~3
@@ -270,9 +252,7 @@ public class PokeGroup {
                 case 2:
                     solutions = getMax2(pureList);
                     if (solutions.size() == 0) {
-                        JSONObject complete = new JSONObject();
-                        complete.put("type",Type.THREE_COUPLE);
-                        complete.put("value",mergePure(pureList).toString());
+                        Solution complete = new Solution(Type.THREE_COUPLE,mergePure(pureList));
                         result.add(complete);
                         return result;
                     }
@@ -280,9 +260,7 @@ public class PokeGroup {
                 case 3:
                     solutions = getMax3(pureList);
                     if (solutions.size() == 0) {
-                        JSONObject complete = new JSONObject();
-                        complete.put("type",Type.TWO_TRIPLE);
-                        complete.put("value",mergePure(pureList).toString());
+                        Solution complete = new Solution(Type.TWO_TRIPLE,mergePure(pureList));
                         result.add(complete);
                         return result;
                     }
@@ -295,32 +273,26 @@ public class PokeGroup {
                     list.addAll(sl);
                     List<PokeArray> types = clearAllPoke(list);
 
-                    JSONObject object = new JSONObject();
+                    Solution solution;
                     switch (types.size()) {
                         case 2:
-                            object.put("type", Type.TWO_TRIPLE);
-                            object.put("value", list.toString());
+                            solution = new Solution(Type.TWO_TRIPLE,list);
                             break;
                         case 3:
-                            object.put("type", Type.THREE_COUPLE);
-                            object.put("value", list.toString());
+                            solution = new Solution(Type.THREE_COUPLE,list);
                             break;
                         default:
-                            object.put("type", Type.INVALID);
+                            solution = getInValidSolution();
                     }
-                    result.add(object);
+                    result.add(solution);
                 } else {
-                    JSONObject invalidResult = new JSONObject();
-                    invalidResult.put("type", Type.INVALID);
-                    result.add(invalidResult);
+                    result.add(getInValidSolution());
                 }
             }
             return result;
 
         } else {
-            JSONObject invalidResult = new JSONObject();
-            invalidResult.put("type", Type.INVALID);
-            result.add(invalidResult);
+            result.add(getInValidSolution());
             return result;
         }
     }
@@ -542,12 +514,12 @@ public class PokeGroup {
      * @param repeat    重复数量
      * @return 返回所需牌组列表，可能是多种可能
      */
-    public List<JSONObject> getRepeatRequirement(int repeat) {
-        List<JSONObject> result = new ArrayList<>();
+    public List<Solution> getRepeatRequirement(int repeat) {
+        List<Solution> result = new ArrayList<>();
         List<PokeArray> pureArray = getPurePoke();
         List<Poke> specialArray = getAllSpecial();
         if (pureArray == null || pureArray.size() > 1) {
-            result.add(getInValidJSON());
+            result.add(getInValidSolution());
             return result;
         }
         if (pureArray.size() == 0) {
@@ -555,7 +527,7 @@ public class PokeGroup {
             if (repeat == 2) {
                 List<PokeArray> solutions = new ArrayList<>();
                 PokeArray s1 = new PokeArray();
-                s1.getContainList().addAll(getByNumber(2, new Poke(specialNumber, 1,false)));
+                s1.getContainList().addAll(getByNumber(2, new Poke(specialNumber, 0,true)));
                 solutions.add(s1);
 
                 PokeArray s2 = new PokeArray();
@@ -569,17 +541,15 @@ public class PokeGroup {
                 for (PokeArray array:solutions) {
                     List<Poke> sl = cloneArray(specialArray,specialNumber);
                     if (array.compareArray(sl)) {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("type",Type.TWO);
-                        jsonObject.put("value",sl.toString());
-                        result.add(jsonObject);
+                        Solution solution = new Solution(Type.TWO,sl);
+                        result.add(solution);
                     } else {
-                        result.add(getInValidJSON());
+                        result.add(getInValidSolution());
                     }
                 }
                 return result;
             } else {
-                result.add(getInValidJSON());
+                result.add(getInValidSolution());
                 return result;
             }
         } else {
@@ -587,13 +557,13 @@ public class PokeGroup {
             PokeArray onlyPokeArray = pureArray.get(0);
             int left = repeat - onlyPokeArray.getSize();
             if (left == 0) {
-                JSONObject allNumber = getRepeatJSON(repeat,onlyPokeArray.getContainList());
+                Solution allNumber = getRepeatJSON(repeat,onlyPokeArray.getContainList());
                 result.add(allNumber);
                 return result;
             } else {
                 Poke[] pokes = new Poke[left];
                 if(left > 2) {
-                    result.add(getInValidJSON());
+                    result.add(getInValidSolution());
                     return result;
                 }
                 Poke templatePoke = onlyPokeArray.getOne();
@@ -605,10 +575,10 @@ public class PokeGroup {
                 List<Poke> sl = cloneArray(specialArray,specialNumber);
                 if (array.compareArray(sl)) {
                     sl.addAll(mergePure(pureArray));
-                    JSONObject repeatResult = getRepeatJSON(repeat,sl);
+                    Solution repeatResult = getRepeatJSON(repeat,sl);
                     result.add(repeatResult);
                 } else {
-                    result.add(getInValidJSON());
+                    result.add(getInValidSolution());
                 }
                 return result;
             }
@@ -616,44 +586,43 @@ public class PokeGroup {
     }
 
     //返回重复牌的类型
-    private JSONObject getRepeatJSON(int repeat, List<Poke> pokeList) {
-        JSONObject result = new JSONObject();
+    private Solution getRepeatJSON(int repeat, List<Poke> pokeList) {
+        Solution result;
         if (repeat == pokeList.size()) {
             switch (repeat) {
                 case 2:
-                    result.put("type",Type.TWO);
+                    result = new Solution(Type.TWO,pokeList);
                     break;
                 case 3:
-                    result.put("type",Type.THREE);
+                    result = new Solution(Type.THREE,pokeList);
                     break;
                 case 4:
-                    result.put("type",Type.BOOM);
+                    result = new Solution(Type.BOOM,pokeList);
                     break;
                 case 5:
-                    result.put("type",Type.FIVE_BOOM);
+                    result = new Solution(Type.FIVE_BOOM,pokeList);
                     break;
                 case 6:
-                    result.put("type",Type.SIX_BOOM);
+                    result = new Solution(Type.SIX_BOOM,pokeList);
                     break;
                 default:
-                    return getInValidJSON();
+                    return getInValidSolution();
             }
-            result.put("value",pokeList.toString());
             return result;
         }
-        return getInValidJSON();
+        return getInValidSolution();
     }
 
     /**
      * @return 返回顺子或者顺金缺的牌
      */
-    public List<JSONObject> getFlow() {
+    public List<Solution> getFlow() {
         List<PokeArray> pureArray = getPurePoke();
         List<Poke> specialArray = getSpecialPoke();
-        List<JSONObject> result = new ArrayList<>();
+        List<Solution> result = new ArrayList<>();
 
         if (pureArray == null) {
-            result.add(getInValidJSON());
+            result.add(getInValidSolution());
             return result;
         }
 
@@ -664,7 +633,7 @@ public class PokeGroup {
         int pattern = pureArray.get(0).getOne().getPattern();
         for (PokeArray pokeArray : pureArray) {
             if (pokeArray.getSize() != 1) {
-                result.add(getInValidJSON());
+                result.add(getInValidSolution());
                 return result;
             }
 
@@ -687,39 +656,35 @@ public class PokeGroup {
             if (finalArray != null) {
                 if (finalArray.size() == 0) {
                     //不需要追加，说明长度已经是5
-                    List<PokeArray> solutions = new ArrayList<>();
+//                    List<PokeArray> solutions = new ArrayList<>();
                     PokeArray a = new PokeArray();
                     PokeArray b = new PokeArray();
                     //如果是同花，返回2种结果
                     if (samePattern) {
                         //第一种返回和原花色一样的
-                        JSONObject ja = new JSONObject();
                         a.addAll(getPokeFromNum(fixedArray, true, pattern));
-                        solutions.add(a);
+//                        solutions.add(a);
 
                         List<Poke> specialList = cloneArray(getSpecialPoke(),specialNumber);
                         if(a.compareArray(specialList)) {
-                            ja.put("type",Type.FIVE_COMBO_BOOM);
                             specialList.addAll(cloneArray(mergePure(pureArray),specialNumber));
-                            ja.put("value",specialList.toString());
-                            result.add(ja);
+                            Solution sa = new Solution(Type.FIVE_COMBO_BOOM,specialList);
+                            result.add(sa);
                         }
 
                     }
-                    JSONObject jb = new JSONObject();
                     b.addAll(getPokeFromNum(fixedArray, false, pattern));
-                    solutions.add(b);
+//                    solutions.add(b);
                     List<Poke> specialList = cloneArray(getSpecialPoke(),specialNumber);
                     if(b.compareArray(specialList)) {
-                        jb.put("type",Type.FIVE_COMBO);
                         specialList.addAll(cloneArray(mergePure(pureArray),specialNumber));
-                        jb.put("value",specialList.toString());
-                        result.add(jb);
+                        Solution sb = new Solution(Type.FIVE_COMBO,specialList);
+                        result.add(sb);
                     }
 
 
                 } else {
-                    List<PokeArray> solutions = new ArrayList<>();
+//                    List<PokeArray> solutions = new ArrayList<>();
                     for (List<Integer> l : finalArray) {
                         l.addAll(fixedArray);
                         PokeArray a = new PokeArray();
@@ -728,43 +693,40 @@ public class PokeGroup {
                         if (samePattern) {
                             //第一种返回和原花色一样的
                             a.getContainList().addAll(getPokeFromNum(l, true, pattern));
-                            solutions.add(a);
+//                            solutions.add(a);
                             result.add(getFlowResult(mergePure(pureArray),specialArray,a,true));
                         }
                         b.getContainList().addAll(getPokeFromNum(l, false, pattern));
-                        solutions.add(b);
+//                        solutions.add(b);
                         result.add(getFlowResult(mergePure(pureArray),specialArray,b,false));
                     }
                     return result;
                 }
             }
         }
-        result.add(getInValidJSON());
+        result.add(getInValidSolution());
         return result;
 
     }
 
     //判断顺子，顺金
-    private JSONObject getFlowResult(List<Poke> pureList, List<Poke> specialPoke, PokeArray pokeArray, boolean samePattern) {
-        JSONObject jsonObject = null;
+    private Solution getFlowResult(List<Poke> pureList, List<Poke> specialPoke, PokeArray pokeArray, boolean samePattern) {
+        Solution solution = null;
         List<Poke> sl = cloneArray(specialPoke,specialNumber);
         if(pokeArray.compareArray(sl)) {
-            jsonObject = new JSONObject();
             sl.addAll(pureList);
-            jsonObject.put("value",sl.toString());
             if(samePattern) {
-                jsonObject.put("type",Type.FIVE_COMBO_BOOM);
+                solution = new Solution(Type.FIVE_COMBO_BOOM,sl);
             } else {
-                jsonObject.put("type",Type.FIVE_COMBO);
+                solution = new Solution(Type.FIVE_COMBO,sl);
             }
         }
-        return jsonObject;
+        return solution;
     }
 
-    //获得无效JSON
-    private JSONObject getInValidJSON() {
-        JSONObject invalid = new JSONObject();
-        invalid.put("type",Type.INVALID);
+    //获得无效Solution
+    private Solution getInValidSolution() {
+        Solution invalid = new Solution(Type.INVALID,null);
         return invalid;
     }
 

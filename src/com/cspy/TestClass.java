@@ -5,6 +5,8 @@ import com.cspy.util.Poke;
 import com.cspy.util.PokeArray;
 
 import javax.swing.*;
+import java.awt.*;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -18,20 +20,26 @@ public class TestClass {
 //        poke.setChangedPattern(3);
 
         List<Poke> pokes = Poke.getRandomPokes(1, 7);
-        List<Poke> smallPokes = pokes.subList(0,18);
+        List<Poke> smallPokes = pokes.subList(0,5);
         smallPokes.sort(Poke::compareTo);
         Collections.reverse(smallPokes);
 //        for (Poke poke:pokes) {
 //            System.out.println(poke);
 //        }
-        HandPokePanel handPokePanel = new HandPokePanel(smallPokes,7,900,pokes);
+//        HandPokePanel handPokePanel = new HandPokePanel(smallPokes,7,900,pokes);
 
 //        PokePanel pokePanel = new PokePanel(poke, 450);
 
-        jFrame.add(handPokePanel);
+//        OtherPanel otherPanel = new OtherPanel(2,new Dimension(180,600),12);
+//
+//        PokeGroupPanel pokeGroupPanel = new PokeGroupPanel(smallPokes,true);
+//        jFrame.add(pokeGroupPanel);
         jFrame.pack();
+        System.out.println(jFrame.getSize());
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
+
+
 
 //        List<Poke> pokes = new ArrayList<>();
 //        pokes.add(new Poke(3, 0));
