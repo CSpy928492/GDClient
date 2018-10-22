@@ -32,11 +32,16 @@ public class PokePanel extends JPanel {
 
     public PokePanel(Poke poke, int width) {
         Dimension dimension = new Dimension(width, width / 9 * 16);
-        System.out.println("卡片大小为：" + dimension.toString());
+//        System.out.println("卡片大小为：" + dimension.toString());
         this.setPreferredSize(dimension);
         this.poke = poke;
         initPanel();
 
+    }
+
+
+    public Poke getPoke() {
+        return poke;
     }
 
     private void initPanel() {
@@ -49,6 +54,7 @@ public class PokePanel extends JPanel {
 
         if (poke != null) {
             if (poke.getNumber() < 13) {
+                //普通牌
                 int preferredWidth = getPreferredSize().width;
                 int preferredHeight = getPreferredSize().height;
 
@@ -87,7 +93,8 @@ public class PokePanel extends JPanel {
                 this.add(jLayeredPane);
 
             } else {
-                jLayeredPane = new JLayeredPane();
+                //大小王
+                setLayout(new BorderLayout());
                 mainLabel = new JLabel(getIcon(getFileName(patternMap.get(poke.getNumberShow()), null), getPreferredSize()));
                 mainLabel.setBounds(0, 0, getPreferredSize().width, getPreferredSize().height);
                 borderPanel = new JLabel(getIcon(
@@ -96,7 +103,7 @@ public class PokePanel extends JPanel {
                 borderPanel.setBounds(0, 0, getPreferredSize().width, getPreferredSize().height);
                 jLayeredPane.add(mainLabel);
                 jLayeredPane.add(borderPanel);
-                jLayeredPane.moveToFront(mainLabel);
+                jLayeredPane.moveToBack(mainLabel);
                 jLayeredPane.moveToFront(borderPanel);
                 this.setOpaque(false);
                 this.add(jLayeredPane);

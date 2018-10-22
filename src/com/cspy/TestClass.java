@@ -2,8 +2,10 @@ package com.cspy;
 
 import com.alibaba.fastjson.JSONObject;
 import com.cspy.util.Poke;
+import com.cspy.util.PokeArray;
 
 import javax.swing.*;
+import java.util.Collections;
 import java.util.List;
 
 public class TestClass {
@@ -15,8 +17,14 @@ public class TestClass {
 //        poke.setChangedNumber(2);
 //        poke.setChangedPattern(3);
 
-        List<Poke> pokes = Poke.getRandomPokes(1).subList(1,12);
-        HandPokePanel handPokePanel = new HandPokePanel(pokes,3,900);
+        List<Poke> pokes = Poke.getRandomPokes(1, 7);
+        List<Poke> smallPokes = pokes.subList(0,18);
+        smallPokes.sort(Poke::compareTo);
+        Collections.reverse(smallPokes);
+//        for (Poke poke:pokes) {
+//            System.out.println(poke);
+//        }
+        HandPokePanel handPokePanel = new HandPokePanel(smallPokes,7,900,pokes);
 
 //        PokePanel pokePanel = new PokePanel(poke, 450);
 

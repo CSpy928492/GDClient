@@ -6,17 +6,17 @@ import java.util.Collections;
 import java.util.List;
 
 public class PokeArray {
-    private ArrayList<Poke> containList;
+    private List<Poke> containList;
 
     public PokeArray() {
         containList = new ArrayList<>();
     }
 
-    public PokeArray(ArrayList<Poke> pokeList) {
+    public PokeArray(List<Poke> pokeList) {
         this.containList = pokeList;
     }
 
-    public ArrayList<Poke> getContainList() {
+    public List<Poke> getContainList() {
         return containList;
     }
 

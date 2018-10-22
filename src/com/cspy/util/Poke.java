@@ -25,10 +25,10 @@ public class Poke implements Comparable<Poke> {
     public static String[] pokePattern = {"!", "@", "#", "$"};
 
     public Poke() {
-        this(-1, -1);
+        this(-1, -1, false);
     }
 
-    public Poke(int number, int pattern) {
+    public Poke(int number, int pattern, boolean special) {
         if (number > -1 && number < pokeNumber.length + 2) {
             this.number = number;
         } else {
@@ -39,6 +39,7 @@ public class Poke implements Comparable<Poke> {
         } else {
             this.pattern = -1;
         }
+        this.special = special;
         this.changedNumber = -1;
         this.changedPattern = -1;
     }
@@ -133,17 +134,17 @@ public class Poke implements Comparable<Poke> {
         }
     }
 
-    public static List<Poke> getPokePacks(int packs) {
+    public static List<Poke> getPokePacks(int packs, int specialNumber) {
         if (packs > 0) {
             Poke[] pokes = new Poke[packs * NUM_OF_PACK];
             for (int k = 0; k < packs; k++) {
                 for (int n = 0; n < pokeNumber.length; n++) {
                     for (int p = 0; p < pokePattern.length; p++) {
-                        pokes[n * pokePattern.length + p + k * NUM_OF_PACK] = new Poke(n, p);
+                        pokes[n * pokePattern.length + p + k * NUM_OF_PACK] = new Poke(n, p,n == specialNumber && p ==0 );
                     }
                 }
-                pokes[(k + 1) * NUM_OF_PACK - 2] = new Poke(pokeNumber.length, -1);
-                pokes[(k + 1) * NUM_OF_PACK - 1] = new Poke(pokeNumber.length + 1, -1);
+                pokes[(k + 1) * NUM_OF_PACK - 2] = new Poke(pokeNumber.length, -1,false);
+                pokes[(k + 1) * NUM_OF_PACK - 1] = new Poke(pokeNumber.length + 1, -1,false);
 
             }
             return new ArrayList<>(Arrays.asList(pokes));
@@ -152,18 +153,18 @@ public class Poke implements Comparable<Poke> {
         }
     }
 
-    public static List<Poke> getRandomPokes(int packs) {
-        List<Poke> pokeList = getPokePacks(packs);
+    public static List<Poke> getRandomPokes(int packs, int specialNumber) {
+        List<Poke> pokeList = getPokePacks(packs, specialNumber);
         Collections.shuffle(pokeList);
         return pokeList;
     }
 
     public static Poke getSmallKing() {
-        return new Poke(pokeNumber.length,-1);
+        return new Poke(pokeNumber.length,-1,false);
     }
 
     public static Poke getBigKing() {
-        return new Poke(pokeNumber.length + 1,-1);
+        return new Poke(pokeNumber.length + 1,-1,false);
     }
 
     @Override
@@ -191,7 +192,7 @@ public class Poke implements Comparable<Poke> {
     }
 
     public Poke clone(int specialNumber) {
-        Poke clonePoke = new Poke(number,pattern);
+        Poke clonePoke = new Poke(number,pattern,special);
         if (specialNumber == number && pattern == 0) {
             clonePoke.special = true;
         }

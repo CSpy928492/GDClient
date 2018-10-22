@@ -49,9 +49,11 @@ public class PokeGroup {
                 r6.addAll(getRepeatRequirement(6));
                 return r6;
             default:
+                List<JSONObject> rd = new ArrayList<>();
+                rd.add(getInValidJSON());
+                return rd;
 
         }
-        return null;
     }
 
     //融合pureArray到list中
@@ -93,11 +95,17 @@ public class PokeGroup {
         List<Poke> specialList = getAllSpecial();
         List<PokeArray> pureList = getPurePoke();
 
+        List<JSONObject> result = new ArrayList<>();
+
 
         switch (pureList.size()) {
             case 1:
                 //3 0   情况
                 int fixNum = 3 - pureList.get(0).getSize();
+                if (fixNum < 0) {
+                    result.add(getInValidJSON());
+                    return result;
+                }
 
                 PokeArray a1 = new PokeArray();
                 a1.getContainList().addAll(getByNumber(2, Poke.getSmallKing()));
@@ -109,15 +117,21 @@ public class PokeGroup {
                 solutions.add(a2);
                 if (fixNum == 0) {
                     PokeArray a3 = new PokeArray();
-                    a3.getContainList().add(new Poke(specialNum, 0));
-                    a3.getContainList().add(new Poke(specialNum, 0));
+                    a3.getContainList().add(new Poke(specialNum, 0,true));
+                    a3.getContainList().add(new Poke(specialNum, 0,true));
                     solutions.add(a3);
                 }
                 break;
             case 2:
+                //3 1 / 3 2 / 2 2 / 2 1
                 solutions = fixThreeWithTwo(pureList);
+                break;
+                default:
+                    JSONObject invalidResult = new JSONObject();
+                    invalidResult.put("type", Type.INVALID);
+                    result.add(invalidResult);
+                    return result;
         }
-        List<JSONObject> result = new ArrayList<>();
         if (solutions != null) {
             for (PokeArray array : solutions) {
                 List<Poke> sl = cloneArray(specialList, specialNum);
@@ -133,6 +147,13 @@ public class PokeGroup {
                     invalidResult.put("type", Type.INVALID);
                     result.add(invalidResult);
                 }
+            }
+            if (solutions.size() == 0) {
+                JSONObject notFixedResult = new JSONObject();
+                notFixedResult.put("type", Type.THREE_WITH_TWO);
+                mergePure(pureList);
+                notFixedResult.put("value",mergePure(pureList).toString());
+                result.add(notFixedResult);
             }
         } else {
             JSONObject invalidResult = new JSONObject();
@@ -153,9 +174,9 @@ public class PokeGroup {
 
     //根据数字返回相同的牌
     public List<Poke> getByNumber(int number, Poke poke) {
-        List<Poke> pokes = new ArrayList<>(number);
+        List<Poke> pokes = new ArrayList<>();
         for (int i = 0; i < number; i++) {
-            pokes.add(new Poke(poke.getNumber(), poke.getPattern()));
+            pokes.add(new Poke(poke.getNumber(), poke.getPattern(),poke.isSpecial()));
         }
         return pokes;
     }
@@ -173,7 +194,7 @@ public class PokeGroup {
                 }
             }
             List<PokeArray> fixed = new ArrayList<>();
-            //只能是3或4，否则返回错误
+            //只能是3,4或5，否则返回错误
             switch (count) {
                 case 3:
                     //1 2   情况
@@ -201,6 +222,8 @@ public class PokeGroup {
                         s5.addAll(getByNumber(1, unfixedList.get(index).getOne()));
                         fixed.add(s5);
                     }
+                    return fixed;
+                case 5:
                     return fixed;
                 default:
                     return null;
@@ -236,6 +259,7 @@ public class PokeGroup {
             result.add(invalidResult);
             return result;
         }
+        //种类2~3
         if (pureList.size() < 4 && pureList.size() > 1) {
             int maxLength = 0;
             for (PokeArray array : pureList) {
@@ -245,9 +269,23 @@ public class PokeGroup {
             switch (maxLength) {
                 case 2:
                     solutions = getMax2(pureList);
+                    if (solutions.size() == 0) {
+                        JSONObject complete = new JSONObject();
+                        complete.put("type",Type.THREE_COUPLE);
+                        complete.put("value",mergePure(pureList).toString());
+                        result.add(complete);
+                        return result;
+                    }
                     break;
                 case 3:
                     solutions = getMax3(pureList);
+                    if (solutions.size() == 0) {
+                        JSONObject complete = new JSONObject();
+                        complete.put("type",Type.TWO_TRIPLE);
+                        complete.put("value",mergePure(pureList).toString());
+                        result.add(complete);
+                        return result;
+                    }
                     break;
             }
             for (PokeArray pokeArray : solutions) {
@@ -336,26 +374,33 @@ public class PokeGroup {
         index.sort(Integer::compareTo);
         switch (pureList.size()) {
             case 2:
-                if (index.get(0) > 0) {
+                if (index.get(index.size() - 1) - index.get(0) == 1) {
+                    if (index.get(0) > 0) {
+                        PokeArray s1 = new PokeArray();
+                        s1.addAll(getByNumber(2, new Poke(index.get(0) - 1, 1,false)));
+                        solutions.add(s1);
+                    }
+                    if (index.get(1) < Poke.pokeNumber.length - 1) {
+                        PokeArray s2 = new PokeArray();
+                        s2.addAll(getByNumber(2, new Poke(index.get(1) + 1, 1,false)));
+                        solutions.add(s2);
+                    }
+                    PokeArray s3 = new PokeArray();
+                    s3.add(new Poke(index.get(0), 1,false));
+                    s3.add(new Poke(index.get(1), 1,false));
+                    solutions.add(s3);
+                } else {
                     PokeArray s1 = new PokeArray();
-                    s1.getContainList().addAll(getByNumber(2, new Poke(index.get(0) - 1, 1)));
+                    s1.addAll(getByNumber(2,new Poke(index.get(0) + 1,1,false)));
                     solutions.add(s1);
                 }
-                if (index.get(1) < Poke.pokeNumber.length - 1) {
-                    PokeArray s2 = new PokeArray();
-                    s2.getContainList().addAll(getByNumber(2, new Poke(index.get(1) + 1, 1)));
-                    solutions.add(s2);
-                }
-                PokeArray s3 = new PokeArray();
-                s3.getContainList().add(new Poke(index.get(0), 1));
-                s3.getContainList().add(new Poke(index.get(1), 1));
-                solutions.add(s3);
+
                 return solutions;
             case 3:
                 PokeArray array = new PokeArray();
                 for (PokeArray a : pureList) {
                     if (a.getSize() < 2) {
-                        array.getContainList().add(new Poke(a.getOne().getNumber(), 1));
+                        array.getContainList().add(new Poke(a.getOne().getNumber(), 1,false));
                     }
                 }
                 solutions.add(array);
@@ -375,21 +420,21 @@ public class PokeGroup {
                 PokeArray fixed = new PokeArray();
                 //补少于3的牌
                 if (array.getSize() < 3) {
-                    fixed.getContainList().addAll(getByNumber(3 - array.getSize(), array.getOne()));
+                    fixed.addAll(getByNumber(3 - array.getSize(), array.getOne()));
+                    solutions.add(fixed);
                 }
-                solutions.add(fixed);
             }
             return solutions;
         } else {
             int index = pureList.get(0).getOne().getNumber();
             if (index > 0) {
                 PokeArray s1 = new PokeArray();
-                s1.getContainList().addAll(getByNumber(3, new Poke(index - 1, 1)));
+                s1.getContainList().addAll(getByNumber(3, new Poke(index - 1, 1,false)));
                 solutions.add(s1);
             }
             if (index < Poke.pokeNumber.length - 1) {
                 PokeArray s2 = new PokeArray();
-                s2.getContainList().addAll(getByNumber(3, new Poke(index + 1, 1)));
+                s2.getContainList().addAll(getByNumber(3, new Poke(index + 1, 1,false)));
                 solutions.add(s2);
             }
             return solutions;
@@ -422,7 +467,7 @@ public class PokeGroup {
         List<Poke> allSpecial = new ArrayList<>();
         for (Poke poke : group) {
             if (poke.equals(Poke.getSmallKing()) || poke.equals(Poke.getBigKing()
-            ) || poke.equals(new Poke(specialNumber, 0))) {
+            ) || poke.equals(new Poke(specialNumber, 0,true))) {
                 allSpecial.add(poke);
             }
         }
@@ -510,7 +555,7 @@ public class PokeGroup {
             if (repeat == 2) {
                 List<PokeArray> solutions = new ArrayList<>();
                 PokeArray s1 = new PokeArray();
-                s1.getContainList().addAll(getByNumber(2, new Poke(specialNumber, 1)));
+                s1.getContainList().addAll(getByNumber(2, new Poke(specialNumber, 1,false)));
                 solutions.add(s1);
 
                 PokeArray s2 = new PokeArray();
@@ -528,6 +573,8 @@ public class PokeGroup {
                         jsonObject.put("type",Type.TWO);
                         jsonObject.put("value",sl.toString());
                         result.add(jsonObject);
+                    } else {
+                        result.add(getInValidJSON());
                     }
                 }
                 return result;
@@ -551,7 +598,7 @@ public class PokeGroup {
                 }
                 Poke templatePoke = onlyPokeArray.getOne();
                 for (int i = 0; i < pokes.length; i++) {
-                    pokes[i] = new Poke(templatePoke.getNumber(), templatePoke.getPattern());
+                    pokes[i] = new Poke(templatePoke.getNumber(), templatePoke.getPattern(),false);
                 }
                 PokeArray array = new PokeArray();
                 array.addAll(Arrays.asList(pokes));
@@ -796,7 +843,7 @@ public class PokeGroup {
         List<Poke> pokeList = new ArrayList<>();
         int p = (pattern + 1) % Poke.pokePattern.length;
         for (Integer i : numList) {
-            Poke poke = new Poke(i, samePattern ? pattern : p);
+            Poke poke = new Poke(i, samePattern ? pattern : p,false);
             pokeList.add(poke);
         }
         return pokeList;
