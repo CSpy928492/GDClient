@@ -9,6 +9,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class PokeGroupPanel extends JPanel {
@@ -26,6 +27,9 @@ public class PokeGroupPanel extends JPanel {
         this.setPreferredSize(size);
         System.out.println(size);
         setLayout(new FlowLayout(FlowLayout.CENTER));
+
+        pokes.sort(Poke::compareTo);
+        Collections.reverse(pokes);
 
         for (int i  = 0; i < pokes.size(); i++) {
             Poke poke = pokes.get(i);

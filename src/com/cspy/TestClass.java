@@ -23,6 +23,9 @@ public class TestClass {
         List<Poke> smallPokes = pokes.subList(0,5);
         smallPokes.sort(Poke::compareTo);
         Collections.reverse(smallPokes);
+
+        PokePacks pokePacks = new PokePacks(PokePanel.getBackPanel().subList(0,20),PokePanel.getRandomPokePanel().get(0));
+
 //        for (Poke poke:pokes) {
 //            System.out.println(poke);
 //        }
@@ -33,7 +36,7 @@ public class TestClass {
 //        OtherPanel otherPanel = new OtherPanel(2,new Dimension(180,600),12);
 //
 //        PokeGroupPanel pokeGroupPanel = new PokeGroupPanel(smallPokes,true);
-//        jFrame.add(pokeGroupPanel);
+        jFrame.add(pokePacks);
         jFrame.pack();
         System.out.println(jFrame.getSize());
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);

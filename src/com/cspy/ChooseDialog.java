@@ -1,6 +1,7 @@
 package com.cspy;
 
 import com.cspy.util.Solution;
+import jdk.nashorn.internal.scripts.JD;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +10,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.List;
 
-public class ChooseDialog extends JFrame{
+public class ChooseDialog extends JDialog {
     PokeGroupPanel[] panels;
     boolean[] clicked;
 
@@ -39,7 +40,9 @@ public class ChooseDialog extends JFrame{
         this.setLayout(new BorderLayout());
         this.add(new JScrollPane(tempPanel));
 
-        this.setPreferredSize(new Dimension(size.width + 30,size.height * 3));
+        this.setBounds(new Rectangle(size.width + 30,size.height * 3));
+        System.out.println("dialog.size()=" + getPreferredSize());
+        revalidate();
 
 
 

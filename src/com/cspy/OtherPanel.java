@@ -1,5 +1,6 @@
 package com.cspy;
 
+import com.cspy.util.AddOrRemove;
 import com.cspy.util.Poke;
 
 import javax.swing.*;
@@ -10,7 +11,7 @@ import java.awt.event.MouseListener;
 import java.util.*;
 import java.util.List;
 
-public class OtherPanel extends JPanel implements MouseListener {
+public class OtherPanel extends JPanel implements MouseListener, AddOrRemove {
 
     int remainPokes;
     int pokeGapWidth;
@@ -33,8 +34,6 @@ public class OtherPanel extends JPanel implements MouseListener {
         addMouseListener(this);
         pokePanelList = new ArrayList<>();
         this.type = type;
-
-
 
 
         Dimension d = getPreferredSize();
@@ -118,7 +117,8 @@ public class OtherPanel extends JPanel implements MouseListener {
 
     }
 
-    private void addByNumber(int number) {
+
+    public void addByNumber(int number) {
         for (int i = 0; i < number; i++) {
             pokePanelList.add(new PokePanel(null,pokeSize.width));
         }
@@ -127,7 +127,7 @@ public class OtherPanel extends JPanel implements MouseListener {
 
     }
 
-    private void removeByNumber(int number) {
+    public void removeByNumber(int number) {
 
         if (number > pokePanelList.size()) {
             return;

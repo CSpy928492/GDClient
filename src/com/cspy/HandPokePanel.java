@@ -3,6 +3,7 @@ package com.cspy;
 import com.cspy.util.Poke;
 import com.cspy.util.PokeGroup;
 import com.cspy.util.Solution;
+import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +18,8 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
     int pokeGapWidth;
     List<PokePanel> selectedPanel;
     boolean selectValid;
+
+    Dimension pokeSize;
     //鼠标点的相对位置
     int mx,my;
     boolean dragging = false;
@@ -32,17 +35,19 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
 
     public HandPokePanel(List<Poke> pokes, int specialNumber,Dimension dimension , List<Poke> allPokes) {
         if (pokes == null) {
-            return;
+            pokes = new ArrayList<>();
         }
 
-        setOpaque(false);
-        setPreferredSize(dimension);
+//        setOpaque(false);
+        this.setPreferredSize(dimension);
         int width = dimension.width;
         this.specialNumber = specialNumber;
         this.allPokes = allPokes;
         pokePanels = new ArrayList<>();
-        pokeGapWidth = width / (pokes.size() + 2);
         selectedPanel = new ArrayList<>();
+        pokeSize = PokePanel.normalPokeSize;
+        pokeGapWidth = pokeSize.width / 3;
+        System.out.println("after change pokeGapWidth=" + pokeGapWidth);
 
         borderLayout = new BorderLayout();
 
@@ -62,17 +67,19 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
 
 //        System.out.println("卡牌间隙为：" + pokeGapWidth);
 
-        int[] pokeX = new int[pokes.size()];
-        for (int i = 0; i < pokeX.length; i++) {
-            pokeX[i] = i * pokeGapWidth;
-        }
+        if (pokes.size() != 0) {
+            int[] pokeX = new int[pokes.size()];
+            for (int i = 0; i < pokeX.length; i++) {
+                pokeX[i] = i * pokeGapWidth;
+            }
 
-        for (int i = 0; i <pokes.size(); i++) {
-            PokePanel pp = new PokePanel(pokes.get(i), pokeGapWidth * 3);
-            pokePanels.add(pp);
-            pp.setBounds(pokeX[i], pokeGapWidth * 2, pp.getPreferredSize().width, pp.getPreferredSize().height);
-            pp.addMouseListener(this);
-            pp.addMouseMotionListener(this);
+            for (int i = 0; i < pokes.size(); i++) {
+                PokePanel pp = new PokePanel(pokes.get(i), pokeSize.width);
+                pokePanels.add(pp);
+                pp.setBounds(pokeX[i], pokeGapWidth * 2, pokeSize.width, pokeSize.height);
+                pp.addMouseListener(this);
+                pp.addMouseMotionListener(this);
+            }
         }
 //        this.setPreferredSize(new Dimension(width, pokeGapWidth * 8));
         System.out.println("width=" + width + "  gapWidth=" + pokeGapWidth + "  共" + pokePanels.size() + "张牌");
@@ -82,6 +89,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
 
         JPanel north = new JPanel();
         north.setLayout(new FlowLayout());
+        north.setOpaque(false);
         north.add(ok);
         north.add(cancel);
 
@@ -90,40 +98,56 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
         north.add(removeOne);
         north.add(addOneSpecial);
 
-        north.setPreferredSize(new Dimension(getPreferredSize().width,pokeGapWidth));
+        north.setPreferredSize(new Dimension(width,pokeGapWidth));
         setLayout(borderLayout);
+        this.add(north,BorderLayout.NORTH);
+
         initPanel(pokePanels);
+        jLayeredPane.setPreferredSize(new Dimension(width,pokeGapWidth * 7));
 
         this.add(jLayeredPane,BorderLayout.CENTER);
-        this.add(north,BorderLayout.NORTH);
 
     }
 
     //根据pokePanels初始化面板
     private void initPanel(List<PokePanel> pokePanels) {
         if (pokeGapWidth != 0) {
-            this.setPreferredSize(new Dimension(pokeGapWidth * (pokePanels.size() + 2),getPreferredSize().height));
+            int width = pokeGapWidth * (pokePanels.size() + 2);
+            if (width < pokeSize.width * 3) {
+                width = pokeSize.width * 3;
+            }
+            this.setPreferredSize(new Dimension(width,pokeSize.height / 5 * 8));
         }
         jLayeredPane.removeAll();
         repaint();
         revalidate();
-        int[] pokeX = new int[pokePanels.size()];
-        for (int i = 0; i < pokeX.length; i++) {
-            pokeX[i] = i * pokeGapWidth;
-        }
-        clicked = new boolean[pokePanels.size()];
-        for (int i = 0; i < clicked.length; i++) {
-            clicked[i] = false;
-        }
-        selectedPanel.clear();
-        for ( int i = 0; i < pokePanels.size(); i++) {
-            PokePanel pp = pokePanels.get(i);
-            pp.setBounds(pokeX[i], pokeGapWidth * 2, pp.getPreferredSize().width, pp.getPreferredSize().height);
-            jLayeredPane.add(pp);
-            jLayeredPane.moveToFront(pp);
+        if (pokePanels.size() != 0) {
+            int[] pokeX = new int[pokePanels.size()];
+            for (int i = 0; i < pokeX.length; i++) {
+                pokeX[i] = i * pokeGapWidth;
+            }
+            clicked = new boolean[pokePanels.size()];
+            for (int i = 0; i < clicked.length; i++) {
+                clicked[i] = false;
+            }
+            selectedPanel.clear();
+            for (int i = 0; i < pokePanels.size(); i++) {
+                PokePanel pp = pokePanels.get(i);
+                pp.setBounds(pokeX[i], pokeGapWidth * 2, pokeSize.width, pokeSize.height);
+                jLayeredPane.add(pp);
+                jLayeredPane.moveToFront(pp);
+            }
         }
 
     }
+
+//    private void resizeGap() {
+//        pokeGapWidth = getPreferredSize().width / (pokePanels.size() + 2);
+//        if (pokeGapWidth > pokeSize.width / 3) {
+//            pokeGapWidth = pokeSize.width / 3;
+//        }
+//        System.out.println("pokeGapWidth=" + pokeGapWidth);
+//    }
 
     //改变选中状态
     private void changePokeByX(int x) {
@@ -290,6 +314,11 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
         return resultList;
     }
 
+    //获取牌数组
+    public List<PokePanel> getPokePanels() {
+        return this.getPokePanels();
+    }
+
     //改变状态的那个牌
     private void addOrRemoveToSelect(PokePanel pp) {
         if (!selectedPanel.contains(pp)) {
@@ -373,7 +402,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                 pokes.sort(Poke::compareTo);
                 Collections.reverse(pokes);
                 for (Poke poke:pokes) {
-                    PokePanel pokePanel = new PokePanel(poke,pokeGapWidth * 3);
+                    PokePanel pokePanel = new PokePanel(poke,pokeSize.width);
                     pokePanel.addMouseMotionListener(this);
                     pokePanel.addMouseListener(this);
                     pokePanels.add(pokePanel);
@@ -382,7 +411,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                 return;
             }
             if (jButton == addOne) {
-                PokePanel pokePanel = new PokePanel(allPokes.get((int) (Math.random() * allPokes.size())),pokeGapWidth * 3);
+                PokePanel pokePanel = new PokePanel(allPokes.get((int) (Math.random() * allPokes.size())),pokeSize.width);
                 pokePanel.addMouseMotionListener(this);
                 pokePanel.addMouseListener(this);
                 pokePanels.add(pokePanel);
@@ -397,7 +426,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                 return;
             }
             if (jButton == addOneSpecial) {
-                PokePanel pokePanel = new PokePanel(new Poke(specialNumber,0,true),pokeGapWidth * 3);
+                PokePanel pokePanel = new PokePanel(new Poke(specialNumber,0,true),pokeSize.width);
                 pokePanel.addMouseMotionListener(this);
                 pokePanel.addMouseListener(this);
                 pokePanels.add(pokePanel);
