@@ -67,6 +67,14 @@ public class PokePanel extends JPanel {
         normalPokeSize = new Dimension(135, 240);
         normalBackSize = new Dimension(90, 160);
 
+        Dimension smallPatternSizeB,smallPatternSizeS;
+        smallPatternSizeB = new Dimension(135,150);
+        smallPatternSizeS = new Dimension(90,90);
+        Dimension bigPatternSizeB,bigPatternSizeS;
+        bigPatternSizeB = new Dimension(90,100);
+        bigPatternSizeS = new Dimension(60,60);
+
+
         normalNumber = new ImageIcon[Poke.pokeNumber.length];
         normalNumberB = new ImageIcon[Poke.pokeNumber.length];
         normalNumberS = new ImageIcon[Poke.pokeNumber.length];
@@ -99,8 +107,8 @@ public class PokePanel extends JPanel {
         smallPatternS = new ImageIcon[Poke.pokePattern.length];
         for (int i = 0; i < smallPattern.length; i++) {
             smallPattern[i] = new ImageIcon(getFileName(patternMap.get(Poke.pokePattern[i]), "小"));
-            smallPatternB[i] = getIcon(smallPattern[i], normalPokeSize);
-            smallPatternS[i] = getIcon(smallPattern[i], normalBackSize);
+            smallPatternB[i] = getIcon(smallPattern[i], smallPatternSizeB);
+            smallPatternS[i] = getIcon(smallPattern[i], smallPatternSizeS);
         }
 
         bigPattern = new ImageIcon[Poke.pokePattern.length + 1];
@@ -108,13 +116,12 @@ public class PokePanel extends JPanel {
         bigPatternS = new ImageIcon[Poke.pokePattern.length + 1];
         for (int i = 0; i < Poke.pokePattern.length; i++) {
             bigPattern[i] = new ImageIcon(getFileName(patternMap.get(Poke.pokePattern[i]), "大"));
-            bigPatternB[i] = getIcon(bigPattern[i], normalPokeSize);
-            bigPatternS[i] = getIcon(bigPattern[i], normalBackSize);
+            bigPatternB[i] = getIcon(bigPattern[i], bigPatternSizeB);
+            bigPatternS[i] = getIcon(bigPattern[i], bigPatternSizeS);
         }
         bigPattern[Poke.pokePattern.length] = new ImageIcon(getFileName("特殊", null));
-        ;
-        bigPatternB[Poke.pokePattern.length] = getIcon(bigPattern[Poke.pokePattern.length], normalPokeSize);
-        bigPatternS[Poke.pokePattern.length] = getIcon(bigPattern[Poke.pokePattern.length], normalBackSize);
+        bigPatternB[Poke.pokePattern.length] = getIcon(bigPattern[Poke.pokePattern.length], bigPatternSizeB);
+        bigPatternS[Poke.pokePattern.length] = getIcon(bigPattern[Poke.pokePattern.length], bigPatternSizeS);
 
         border = new ImageIcon(getFileName("纸牌边框", null));
         borderB = getIcon(border, normalPokeSize);
@@ -152,7 +159,7 @@ public class PokePanel extends JPanel {
             pokePanels = new ArrayList<>();
             List<Poke> pokes = Poke.getRandomPokes(2, 5);
             for (Poke p : pokes) {
-                PokePanel pp = new PokePanel(p, normalBackSize.width);
+                PokePanel pp = new PokePanel(p, normalPokeSize.width);
                 pokePanels.add(pp);
             }
             return pokePanels;
