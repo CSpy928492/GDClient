@@ -45,6 +45,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
         this.allPokes = allPokes;
         pokePanels = new ArrayList<>();
         selectedPanel = new ArrayList<>();
+
         pokeSize = PokePanel.normalPokeSize;
         pokeGapWidth = pokeSize.width / 3;
         System.out.println("after change pokeGapWidth=" + pokeGapWidth);
@@ -74,7 +75,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
             }
 
             for (int i = 0; i < pokes.size(); i++) {
-                PokePanel pp = new PokePanel(pokes.get(i), pokeSize.width);
+                PokePanel pp = new PokePanel(pokes.get(i), pokeSize);
                 pokePanels.add(pp);
                 pp.setBounds(pokeX[i], pokeGapWidth * 2, pokeSize.width, pokeSize.height);
                 pp.addMouseListener(this);
@@ -402,7 +403,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                 pokes.sort(Poke::compareTo);
                 Collections.reverse(pokes);
                 for (Poke poke:pokes) {
-                    PokePanel pokePanel = new PokePanel(poke,pokeSize.width);
+                    PokePanel pokePanel = new PokePanel(poke,pokeSize);
                     pokePanel.addMouseMotionListener(this);
                     pokePanel.addMouseListener(this);
                     pokePanels.add(pokePanel);
@@ -411,7 +412,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                 return;
             }
             if (jButton == addOne) {
-                PokePanel pokePanel = new PokePanel(allPokes.get((int) (Math.random() * allPokes.size())),pokeSize.width);
+                PokePanel pokePanel = new PokePanel(allPokes.get((int) (Math.random() * allPokes.size())),pokeSize);
                 pokePanel.addMouseMotionListener(this);
                 pokePanel.addMouseListener(this);
                 pokePanels.add(pokePanel);
@@ -426,7 +427,7 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                 return;
             }
             if (jButton == addOneSpecial) {
-                PokePanel pokePanel = new PokePanel(new Poke(specialNumber,0,true),pokeSize.width);
+                PokePanel pokePanel = new PokePanel(new Poke(specialNumber,0,true),pokeSize);
                 pokePanel.addMouseMotionListener(this);
                 pokePanel.addMouseListener(this);
                 pokePanels.add(pokePanel);

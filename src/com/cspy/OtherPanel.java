@@ -62,7 +62,7 @@ public class OtherPanel extends JPanel implements MouseListener, AddOrRemove {
                 break;
         }
         for (int i = 0; i < remainPokes; i++) {
-            PokePanel pp = new PokePanel(null, pokeSize.width);
+            PokePanel pp = new PokePanel(null, pokeSize);
             pokePanelList.add(pp);
         }
 
@@ -120,7 +120,7 @@ public class OtherPanel extends JPanel implements MouseListener, AddOrRemove {
 
     public void addByNumber(int number) {
         for (int i = 0; i < number; i++) {
-            pokePanelList.add(new PokePanel(null,pokeSize.width));
+            pokePanelList.add(new PokePanel(null,pokeSize));
         }
         remainPokes = pokePanelList.size();
         refreshPanel();

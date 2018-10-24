@@ -19,13 +19,13 @@ public class TestClass {
 //        poke.setChangedNumber(2);
 //        poke.setChangedPattern(3);
 
-        List<Poke> pokes = Poke.getRandomPokes(1, 7);
-        List<Poke> smallPokes = pokes.subList(0,5);
-        smallPokes.sort(Poke::compareTo);
-        Collections.reverse(smallPokes);
+//        List<Poke> pokes = Poke.getRandomPokes(1, 7);
+//        List<Poke> smallPokes = pokes.subList(0,5);
+//        smallPokes.sort(Poke::compareTo);
+//        Collections.reverse(smallPokes);
 
-        PokePacks pokePacks = new PokePacks(PokePanel.getBackPanel().subList(0,20),PokePanel.getRandomPokePanel().get(0));
-
+//        PokePacks pokePacks = new PokePacks(PokePanel.getBackPanel().subList(0,20),PokePanel.getRandomPokePanel().get(0));
+//        PokePacks pokePacks = new PokePacks(PokePanel.getRandomPokePanel().subList(0,20),null);
 //        for (Poke poke:pokes) {
 //            System.out.println(poke);
 //        }
@@ -36,13 +36,44 @@ public class TestClass {
 //        OtherPanel otherPanel = new OtherPanel(2,new Dimension(180,600),12);
 //
 //        PokeGroupPanel pokeGroupPanel = new PokeGroupPanel(smallPokes,true);
-        jFrame.add(pokePacks);
-        jFrame.pack();
+//        jFrame.add(pokePacks);
+
+
+        JPanel jLayeredPane = new JPanel();
+        jLayeredPane.setLayout(new BorderLayout());
+        jLayeredPane.setPreferredSize(new Dimension(500,500));
+        JPanel bottomPanel = new JPanel();
+        bottomPanel.setLayout(new GridLayout(1,2));
+        JPanel left = new JPanel();
+//        left.setPreferredSize(new Dimension(100,400));
+
+        ImageIcon imageIcon = new ImageIcon("image/大王.png");
+        Image image = imageIcon.getImage().getScaledInstance(180, 200, Image.SCALE_AREA_AVERAGING);
+        ImageIcon icon = new ImageIcon(image);
+        JLabel jLabel = new JLabel(icon);
+        left.setBackground(Color.CYAN);
+        left.setLayout(new FlowLayout());
+        left.add(jLabel);
+//        left.setOpaque(false);
+        JPanel right = new JPanel();
+//        right.setPreferredSize(new Dimension(100,400));
+        right.setBackground(Color.WHITE);
+//        right.setOpaque(false);
+        bottomPanel.add(left);
+        bottomPanel.add(right);
+
+        JPanel topPanel = new JPanel();
+
+        jLayeredPane.add(bottomPanel);
+
+        jFrame.setLayout(new BorderLayout());
+        jFrame.add(jLayeredPane);
+
+
         System.out.println(jFrame.getSize());
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
-
-
+        jFrame.pack();
 
 //        List<Poke> pokes = new ArrayList<>();
 //        pokes.add(new Poke(3, 0));

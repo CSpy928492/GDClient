@@ -85,7 +85,7 @@ public class Main extends JFrame {
         List<Poke> pokes = Poke.getRandomPokes(2,2);
         List<PokePanel> allPanels = new ArrayList<>();
         for (int i = 0;i <pokes.size();i++) {
-            PokePanel pp = new PokePanel(pokes.get(i),pokeSize.width);
+            PokePanel pp = new PokePanel(pokes.get(i),pokeSize);
             allPanels.add(pp);
         }
 

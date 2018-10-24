@@ -33,7 +33,7 @@ public class PokeGroupPanel extends JPanel {
 
         for (int i  = 0; i < pokes.size(); i++) {
             Poke poke = pokes.get(i);
-            PokePanel pp = new PokePanel(poke, pokeSize.width);
+            PokePanel pp = new PokePanel(poke, pokeSize);
             pp.setBounds(gap + i * (pokeSize.width + gap), gap,
                     pokeSize.width, pokeSize.height);
             this.add(pp);

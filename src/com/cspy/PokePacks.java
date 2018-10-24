@@ -28,10 +28,12 @@ public class PokePacks extends JPanel {
         setPreferredSize(new Dimension(400,400));
         setLayout(new FlowLayout(FlowLayout.CENTER));
 
-        this.specialPanel = specialPanel;
-        pokes.add(1,specialPanel);
-        pokes.remove(0);
-        Collections.shuffle(pokes);
+        if (specialPanel != null) {
+            this.specialPanel = specialPanel;
+            pokes.add(1, specialPanel);
+            pokes.remove(0);
+            Collections.shuffle(pokes);
+        }
 
         this.pokes = pokes;
         if (pokes.size() < 10) {
@@ -40,7 +42,8 @@ public class PokePacks extends JPanel {
         showPokes = pokes.subList(fromIndex,toIndex);
 
 
-        pokeSize = PokePanel.normalBackSize;
+        pokeSize = pokes.get(0).getPreferredSize();
+        System.out.println("0:" + pokeSize);
 
         jLayeredPane = new JLayeredPane();
 

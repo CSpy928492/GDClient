@@ -16,6 +16,7 @@ public class PokePanel extends JPanel {
     private JLabel smallPatternPanel;
     private JLabel bigPatternPanel;
     private JLabel borderPanel;
+    private Dimension dimension;
 
     static ImageIcon[] normalNumber;
     static ImageIcon[] normalNumberB;
@@ -64,15 +65,15 @@ public class PokePanel extends JPanel {
         patternMap.put("*", "特殊");
         patternMap.put("=", "卡背");
 
-        normalPokeSize = new Dimension(135, 240);
+        normalPokeSize = new Dimension(180, 320);
         normalBackSize = new Dimension(90, 160);
 
         Dimension smallPatternSizeB,smallPatternSizeS;
-        smallPatternSizeB = new Dimension(135,150);
-        smallPatternSizeS = new Dimension(90,90);
+        smallPatternSizeB = new Dimension(normalPokeSize.width,normalPokeSize.width / 9 * 10);
+        smallPatternSizeS = new Dimension(normalBackSize.width,normalBackSize.width / 9 * 10);
         Dimension bigPatternSizeB,bigPatternSizeS;
-        bigPatternSizeB = new Dimension(90,100);
-        bigPatternSizeS = new Dimension(60,60);
+        bigPatternSizeB = new Dimension(normalPokeSize.width /3 * 2,normalPokeSize.width /3 * 2);
+        bigPatternSizeS = new Dimension(normalBackSize.width /3 * 2,normalBackSize.width /3 * 2);
 
 
         normalNumber = new ImageIcon[Poke.pokeNumber.length];
@@ -90,6 +91,7 @@ public class PokePanel extends JPanel {
             redNumber[i] = new ImageIcon(getFileName(Poke.pokeNumber[i], "r"));
             redNumberB[i] = getIcon(redNumber[i], normalPokeSize);
             redNumberS[i] = getIcon(redNumber[i], normalBackSize);
+
         }
         wangIcons = new ImageIcon[2];
         wangIconsB = new ImageIcon[2];
@@ -139,13 +141,13 @@ public class PokePanel extends JPanel {
         //临时设置
         List<Poke> pokes = Poke.getRandomPokes(2, 5);
         for (Poke p : pokes) {
-            PokePanel pp = new PokePanel(p, normalBackSize.width);
+            PokePanel pp = new PokePanel(p, normalPokeSize);
             pokePanels.add(pp);
         }
 
         backPanels = new ArrayList<>();
         for (int i = 0; i < Poke.NUM_OF_PACK * 2; i++) {
-            backPanels.add(new PokePanel(null, normalBackSize.width));
+            backPanels.add(new PokePanel(null, normalBackSize));
         }
 
         System.out.println("加载随机牌组完成");
@@ -159,7 +161,7 @@ public class PokePanel extends JPanel {
             pokePanels = new ArrayList<>();
             List<Poke> pokes = Poke.getRandomPokes(2, 5);
             for (Poke p : pokes) {
-                PokePanel pp = new PokePanel(p, normalPokeSize.width);
+                PokePanel pp = new PokePanel(p, normalPokeSize);
                 pokePanels.add(pp);
             }
             return pokePanels;
@@ -173,16 +175,17 @@ public class PokePanel extends JPanel {
         } else {
             backPanels = new ArrayList<>();
             for (int i = 0; i < Poke.NUM_OF_PACK * 2; i++) {
-                backPanels.add(new PokePanel(null, normalBackSize.width));
+                backPanels.add(new PokePanel(null, normalBackSize));
             }
             return pokePanels;
         }
 
     }
 
-    public PokePanel(Poke poke, int width) {
-        Dimension dimension = new Dimension(width, width / 9 * 16);
+    public PokePanel(Poke poke, Dimension dimension) {
+//        Dimension dimension = new Dimension(width, width / 9 * 16);
 //        System.out.println("卡片大小为：" + dimension.toString());
+        this.dimension = dimension;
         this.setPreferredSize(dimension);
         this.poke = poke;
         initPanel();
@@ -202,7 +205,6 @@ public class PokePanel extends JPanel {
 //        System.out.println("宽度:" + getSize().width + "\n高度:" + getSize().height);
 
 
-        Dimension d = getPreferredSize();
         if (poke != null) {
             if (poke.getNumber() < 13) {
                 boolean red = true;
@@ -213,7 +215,7 @@ public class PokePanel extends JPanel {
 
                 ImageIcon[] redNumber,normalNumber,smallPattern,bigPattern;
                 ImageIcon border;
-                if (d == normalPokeSize) {
+                if (dimension.equals(normalPokeSize)) {
                     redNumber = redNumberB;
                     normalNumber = normalNumberB;
                     smallPattern = smallPatternB;
@@ -240,10 +242,10 @@ public class PokePanel extends JPanel {
 
 
                 setLayout(new BorderLayout());
-                mainLabel.setBounds(0, 0, d.width, d.height);
-                smallPatternPanel.setBounds(0, (int) (0.1875 * d.height), d.width, (int) (d.height * 0.625));
-                bigPatternPanel.setBounds(d.width / 6, d.height / 2 - (d.height / 3), d.width / 3 * 2, d.height / 3 * 2);
-                borderPanel.setBounds(0, 0, d.width, d.height);
+                mainLabel.setBounds(0, 0, dimension.width, dimension.height);
+                smallPatternPanel.setBounds(0, (int) (0.1875 * dimension.height), dimension.width, (int) (dimension.height * 0.625));
+                bigPatternPanel.setBounds(dimension.width / 6, dimension.height / 2 - (dimension.height / 3), dimension.width / 3 * 2, dimension.height / 3 * 2);
+                borderPanel.setBounds(0, 0, dimension.width, dimension.height);
                 jLayeredPane.add(mainLabel);
                 jLayeredPane.add(bigPatternPanel);
                 jLayeredPane.add(smallPatternPanel);
@@ -260,7 +262,7 @@ public class PokePanel extends JPanel {
                 ImageIcon[] wangIcons;
                 ImageIcon border;
 
-                if (d == normalPokeSize) {
+                if (dimension == normalPokeSize) {
                     wangIcons = wangIconsB;
                     border = borderB;
                 } else {
@@ -275,9 +277,9 @@ public class PokePanel extends JPanel {
                     mainLabel = new JLabel(wangIcons[1]);
 
                 }
-                mainLabel.setBounds(0, 0, d.width, d.height);
+                mainLabel.setBounds(0, 0, dimension.width, dimension.height);
                 borderPanel = new JLabel(border);
-                borderPanel.setBounds(0, 0, d.width, d.height);
+                borderPanel.setBounds(0, 0, dimension.width, dimension.height);
                 jLayeredPane.add(mainLabel);
                 jLayeredPane.add(borderPanel);
                 jLayeredPane.moveToBack(mainLabel);
@@ -288,7 +290,7 @@ public class PokePanel extends JPanel {
         } else {
 
             ImageIcon back,border;
-            if (d == normalPokeSize) {
+            if (dimension.equals(normalPokeSize)) {
                 back = backB;
                 border = borderB;
             } else {
@@ -297,9 +299,9 @@ public class PokePanel extends JPanel {
             }
             setLayout(new BorderLayout());
             mainLabel = new JLabel(back);
-            mainLabel.setBounds(0, 0, d.width, d.height);
+            mainLabel.setBounds(0, 0, dimension.width, dimension.height);
             borderPanel = new JLabel(border);
-            borderPanel.setBounds(0, 0, d.width, d.height);
+            borderPanel.setBounds(0, 0, dimension.width, dimension.height);
             jLayeredPane.add(mainLabel);
             jLayeredPane.add(borderPanel);
             jLayeredPane.moveToBack(mainLabel);
@@ -314,8 +316,8 @@ public class PokePanel extends JPanel {
     public static ImageIcon getIcon(ImageIcon originalIcon, Dimension dimension) {
 //        System.out.println("原图片宽度:" + originalIcon.getIconWidth() + "\n原图片高度:" + originalIcon.getIconHeight());
         Image image = originalIcon.getImage();
-        image = image.getScaledInstance(dimension.width, dimension.height, Image.SCALE_AREA_AVERAGING);
-        ImageIcon icon = new ImageIcon(image);
+        Image aImage = image.getScaledInstance(dimension.width, dimension.height, Image.SCALE_AREA_AVERAGING);
+        ImageIcon icon = new ImageIcon(aImage);
 //        System.out.println("图片宽度:" + icon.getIconWidth() + "\n图片高度:" + icon.getIconHeight());
         return icon;
     }
