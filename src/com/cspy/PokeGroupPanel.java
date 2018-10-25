@@ -14,13 +14,16 @@ import java.util.List;
 
 public class PokeGroupPanel extends JPanel {
     List<Poke> pokes;
-    boolean valid;
+    private boolean valid;
     int gap = 20;
-    Dimension pokeSize = new Dimension(90, 150);
+    Dimension pokeSize = PokePanel.normalBackSize;
 
 
     public PokeGroupPanel(List<Poke> pokes, boolean valid) {
         this.pokes = pokes;
+
+//        Dimension dimension = new Dimension(PokePanel.normalBackSize.width * 6 +100,PokePanel.normalBackSize.height + 20);
+
         int width = pokes.size() * pokeSize.width + (pokes.size() - 1) * gap;
         int height = pokeSize.height + gap * 2;
         Dimension size = new Dimension(width, height);
@@ -47,4 +50,13 @@ public class PokeGroupPanel extends JPanel {
 
     }
 
+    @Override
+    public boolean isValid() {
+        return valid;
+    }
+
+    @Override
+    public String toString() {
+        return pokes.toString();
+    }
 }

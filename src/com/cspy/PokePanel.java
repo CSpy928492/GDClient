@@ -65,7 +65,7 @@ public class PokePanel extends JPanel {
         patternMap.put("*", "特殊");
         patternMap.put("=", "卡背");
 
-        normalPokeSize = new Dimension(180, 320);
+        normalPokeSize = new Dimension(135, 240);
         normalBackSize = new Dimension(90, 160);
 
         Dimension smallPatternSizeB,smallPatternSizeS;
@@ -206,10 +206,10 @@ public class PokePanel extends JPanel {
 
 
         if (poke != null) {
-            if (poke.getNumber() < 13) {
+            if (poke.getNumberWithSpecial() < 13) {
                 boolean red = true;
                 //普通牌
-                if (poke.getPattern() > 1) {
+                if (poke.getPatternWithSpecial() > 1) {
                     red = false;
                 }
 
@@ -230,13 +230,13 @@ public class PokePanel extends JPanel {
                 }
 
 
-                mainLabel = new JLabel(red ? redNumber[poke.getNumber()] : normalNumber[poke.getNumber()]);
+                mainLabel = new JLabel(red ? redNumber[poke.getNumberWithSpecial()] : normalNumber[poke.getNumberWithSpecial()]);
 
-                smallPatternPanel = new JLabel(smallPattern[poke.getPattern()]);
+                smallPatternPanel = new JLabel(smallPattern[poke.getPatternWithSpecial()]);
                 if (poke.isSpecial() && poke.isChanged()) {
                     bigPatternPanel = new JLabel(bigPattern[Poke.pokePattern.length]);
                 } else {
-                    bigPatternPanel = new JLabel(bigPattern[poke.getPattern()]);
+                    bigPatternPanel = new JLabel(bigPattern[poke.getPatternWithSpecial()]);
                 }
                 borderPanel = new JLabel(border);
 

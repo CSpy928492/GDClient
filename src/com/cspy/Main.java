@@ -8,6 +8,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 
 public class Main extends JFrame {
@@ -19,6 +20,10 @@ public class Main extends JFrame {
     Dimension pokeSize;
     JLabel centerLabel;
 
+    int toPlayer = 0;
+    int specialNumber = -1;
+
+
 
     public Main() {
         mainSize = new Dimension(1200, 1000);
@@ -27,9 +32,9 @@ public class Main extends JFrame {
         this.setPreferredSize(mainSize);
         this.setLayout(new BorderLayout());
 
-        Dimension p02 = new Dimension(80, 450);
-        Dimension p1 = new Dimension(600, 100);
-        Dimension p4 = new Dimension(700,400);
+        Dimension p02 = new Dimension(PokePanel.normalBackSize.width, 350);
+        Dimension p1 = new Dimension(600, PokePanel.normalBackSize.height);
+        Dimension p4 = new Dimension(700,360);
         others = new OtherPanel[3];
 
         System.out.println("初始化面板");
@@ -68,7 +73,7 @@ public class Main extends JFrame {
         Collections.reverse(smallPokes);
 
         System.out.println("初始化手牌面板");
-        handPokePanel = new HandPokePanel(null, 3, p4, pokes);
+        handPokePanel = new HandPokePanel(null, 3, p4, smallPokes);
         JPanel jp2 = new JPanel();
         jp2.setBackground(Color.WHITE);
         jp2.setLayout(new FlowLayout(FlowLayout.CENTER));
@@ -82,18 +87,54 @@ public class Main extends JFrame {
     }
 
     public void start() {
-        List<Poke> pokes = Poke.getRandomPokes(2,2);
-        List<PokePanel> allPanels = new ArrayList<>();
-        for (int i = 0;i <pokes.size();i++) {
-            PokePanel pp = new PokePanel(pokes.get(i),pokeSize);
-            allPanels.add(pp);
-        }
-
-        PokePacks pokePacks = new PokePacks(allPanels,null);
+        List<PokePanel> allPanels = PokePanel.getBackPanel();
+        Poke randomPoke = Poke.getRandomPokes(1,specialNumber).get(0);
+        PokePacks pokePacks = new PokePacks(allPanels,new PokePanel(randomPoke,PokePanel.normalBackSize));
 //        this.getLayout().removeLayoutComponent();
         this.remove(centerLabel);
         this.add(pokePacks,BorderLayout.CENTER);
         revalidate();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int  i = 0; i < pokePacks.pokes.size(); i++) {
+                    pokePacks.removeTop();
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }).start();
+
+
+
+//        JPanel pokeFlyPanel = new JPanel();
+//        pokeFlyPanel.setLayout(new FlowLayout());
+//        setGlassPane(pokeFlyPanel);
+//        pokeFlyPanel.setVisible(true);
+//        int length = pokePacks.showPokes.size();
+//        for (int i = 0; i < length; i++) {
+//            PokePanel pp = pokePacks.removeTop();
+//            pokeFlyPanel.add(pp);
+//            switch (toPlayer % 4) {
+//                case 0:
+//                    for (int j = 0; j < 400; j+=10) {
+//                        pp.setBounds();
+//
+//                    }
+//                    break;
+//                case 1:
+//                    break;
+//                case 2:break;
+//                case 3:break;
+//            }
+//            ++toPlayer;
+//        }
+
         System.out.println("start完成");
     }
 

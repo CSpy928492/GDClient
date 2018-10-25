@@ -234,8 +234,9 @@ public class Poke implements Comparable<Poke> {
 
     @Override
     public int compareTo(Poke o) {
-        int aNum = special?changed?changedNumber:number:number;
-        int oNum = o.special?o.changed?o.changedNumber:o.number:o.number;;
-        return aNum - oNum;
+        return this.getNumberWithSpecial() - o.getNumberWithSpecial();
+//        int aNum = special?changed?changedNumber:number:number;
+//        int oNum = o.special?o.changed?o.changedNumber:o.number:o.number;;
+//        return aNum - oNum;
     }
 }

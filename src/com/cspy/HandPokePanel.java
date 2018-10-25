@@ -3,7 +3,7 @@ package com.cspy;
 import com.cspy.util.Poke;
 import com.cspy.util.PokeGroup;
 import com.cspy.util.Solution;
-import org.omg.PortableInterceptor.SYSTEM_EXCEPTION;
+import com.cspy.util.Type;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +32,8 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
     BorderLayout borderLayout;
 
     List<Poke> allPokes;
+
+    Solution last;
 
     public HandPokePanel(List<Poke> pokes, int specialNumber,Dimension dimension , List<Poke> allPokes) {
         if (pokes == null) {
@@ -65,6 +67,8 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
         removeOne.addActionListener(this);
         addOneSpecial = new JButton("增加一个特殊");
         addOneSpecial.addActionListener(this);
+
+        last = new Solution(Type.INVALID,null);
 
 //        System.out.println("卡牌间隙为：" + pokeGapWidth);
 
@@ -384,8 +388,27 @@ public class HandPokePanel extends JPanel implements MouseListener, MouseMotionL
                 }
                 resultList = getValidSolutions();
 
-                ChooseDialog dialog = new ChooseDialog(resultList);
-                dialog.setVisible(true);
+                if (resultList.size() == 0) {
+                    System.out.println("出牌无效");
+                } else {
+                    List<Poke> temp = new ArrayList<>();
+//                    temp.add(new Poke(7,2,false));
+//                    Solution sb = new Solution(Type.ONE,temp);
+                    ChooseDialog dialog = new ChooseDialog(resultList,last,specialNumber);
+                    dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+                    dialog.setVisible(true);
+                    Solution s = dialog.getSolution();
+
+                    if (s != null ) {
+                        System.out.println("已选择的是:" + s);
+                        last = s;
+                        System.out.println("当前last:" + last);
+                    }
+                }
+
+
+
+
                 return;
 
 

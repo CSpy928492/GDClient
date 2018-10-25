@@ -26,8 +26,8 @@ public class OtherPanel extends JPanel implements MouseListener, AddOrRemove {
     JLayeredPane jLayeredPane;
 
 
-    public OtherPanel(int type, Dimension preferredSize, int remainPokes) {
-        setPreferredSize(preferredSize);
+    public OtherPanel(int type, Dimension d, int remainPokes) {
+        setPreferredSize(d);
         this.remainPokes = remainPokes;
         clockPanel = new ClockPanel("倒计时");
         remainLabel = new JLabel("还剩：" + remainPokes);
@@ -36,7 +36,6 @@ public class OtherPanel extends JPanel implements MouseListener, AddOrRemove {
         this.type = type;
 
 
-        Dimension d = getPreferredSize();
         System.out.println("d=" + d);
         setLayout(new BorderLayout());
 
@@ -45,7 +44,7 @@ public class OtherPanel extends JPanel implements MouseListener, AddOrRemove {
 
         switch (type) {
             case 1://水平
-                pokeSize = new Dimension(d.height / 5 * 3, d.height);
+                pokeSize = PokePanel.normalBackSize;
                 littlePanel.setLayout(new GridLayout(2, 1));
                 littlePanel.add(clockPanel);
                 littlePanel.add(remainLabel);
@@ -53,7 +52,7 @@ public class OtherPanel extends JPanel implements MouseListener, AddOrRemove {
                 this.add(littlePanel, BorderLayout.WEST);
                 break;
             case 2://竖直
-                pokeSize = new Dimension(d.width, d.width / 3 * 5);
+                pokeSize = PokePanel.normalBackSize;
                 littlePanel.setLayout(new GridLayout(1, 2));
                 littlePanel.add(clockPanel);
                 littlePanel.add(remainLabel);
