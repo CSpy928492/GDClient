@@ -1,19 +1,16 @@
-package com.cspy;
+package com.cspy.component;
 
+import com.cspy.component.PokePanel;
 import com.cspy.util.Poke;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 
 public class PokeGroupPanel extends JPanel {
-    List<Poke> pokes;
+    public List<Poke> pokes;
     private boolean valid;
     int gap = 20;
     Dimension pokeSize = PokePanel.normalBackSize;

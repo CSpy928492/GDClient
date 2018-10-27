@@ -1,11 +1,9 @@
-package com.cspy;
+package com.cspy.component;
 
 import com.cspy.util.AddOrRemove;
-import com.cspy.util.Poke;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.*;

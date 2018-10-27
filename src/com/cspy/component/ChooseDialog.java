@@ -1,15 +1,12 @@
-package com.cspy;
+package com.cspy.component;
 
-import com.cspy.util.Poke;
 import com.cspy.util.PokeGroup;
 import com.cspy.util.Solution;
-import jdk.nashorn.internal.scripts.JD;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.List;
 
 public class ChooseDialog extends JDialog {

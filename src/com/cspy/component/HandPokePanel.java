@@ -1,4 +1,4 @@
-package com.cspy;
+package com.cspy.component;
 
 import com.cspy.util.Poke;
 import com.cspy.util.PokeGroup;

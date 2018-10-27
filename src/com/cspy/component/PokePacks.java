@@ -1,4 +1,4 @@
-package com.cspy;
+package com.cspy.component;
 
 import javax.swing.*;
 import java.awt.*;
@@ -15,7 +15,7 @@ public class PokePacks extends JPanel {
     Dimension pokePaneSize;
     PokePanel specialPanel;
 
-    List<PokePanel> pokes;
+    public List<PokePanel> pokes;
 
     List<PokePanel> showPokes;
 

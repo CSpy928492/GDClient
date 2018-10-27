@@ -1,4 +1,4 @@
-package com.cspy;
+package com.cspy.component;
 
 import javax.swing.*;
 
