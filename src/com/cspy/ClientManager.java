@@ -1,4 +1,58 @@
 package com.cspy;
 
-public class ClientManager {
+
+
+import com.cspy.component.LoginPanel;
+import com.cspy.component.RoomPanel;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+public class ClientManager extends JFrame implements ActionListener {
+
+    public String clientToken;
+    LoginPanel loginPanel;
+    RoomPanel roomPanel;
+
+
+    public ClientManager() {
+
+        loginPanel = new LoginPanel();
+
+
+        this.add(loginPanel);
+        this.pack();
+        this.setVisible(true);
+        this.setResizable(false);
+        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+    }
+
+    public static void main(String[] args) {
+        new ClientManager();
+    }
+
+    public void setToken(String token) {
+        this.clientToken = token;
+        System.out.println("token is" + clientToken);
+        switchToRoomPanel();
+    }
+
+    private void switchToRoomPanel() {
+        if(roomPanel == null) {
+            roomPanel = new RoomPanel();
+        }
+
+        this.add(roomPanel);
+        this.pack();
+
+    }
+
+
+    @Override
+    public void actionPerformed(ActionEvent e) {
+        if (e.getSource() == loginPanel) {
+            System.out.println("login消失了");
+        }
+    }
 }
