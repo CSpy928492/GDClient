@@ -1,9 +1,5 @@
-package com.cspy;
+package com.cspy.component;
 
-import com.cspy.component.HandPokePanel;
-import com.cspy.component.OtherPanel;
-import com.cspy.component.PokePacks;
-import com.cspy.component.PokePanel;
 import com.cspy.util.Poke;
 
 import javax.swing.*;
@@ -13,7 +9,7 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 
-public class Main extends JFrame {
+public class GamePanel extends JFrame {
 
     OtherPanel[] others;
     Dimension mainSize;
@@ -27,7 +23,7 @@ public class Main extends JFrame {
 
 
 
-    public Main() {
+    public GamePanel() {
         mainSize = new Dimension(1200, 1000);
 
         pokeSize = new Dimension(90,160);
@@ -141,6 +137,6 @@ public class Main extends JFrame {
     }
 
     public static void main(String[] args) {
-        new Main();
+        new GamePanel();
     }
 }

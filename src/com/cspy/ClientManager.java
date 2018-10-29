@@ -2,6 +2,7 @@ package com.cspy;
 
 
 
+import com.cspy.component.GamePanel;
 import com.cspy.component.LoginPanel;
 import com.cspy.component.RoomPanel;
 
@@ -11,9 +12,10 @@ import java.awt.event.ActionListener;
 
 public class ClientManager extends JFrame implements ActionListener {
 
-    public String clientToken;
+    public static String clientToken;
     LoginPanel loginPanel;
     RoomPanel roomPanel;
+    GamePanel gamePanel;
 
 
     public ClientManager() {
@@ -34,6 +36,7 @@ public class ClientManager extends JFrame implements ActionListener {
 
     public void setToken(String token) {
         this.clientToken = token;
+
         System.out.println("token is" + clientToken);
         switchToRoomPanel();
     }
@@ -42,8 +45,15 @@ public class ClientManager extends JFrame implements ActionListener {
         if(roomPanel == null) {
             roomPanel = new RoomPanel();
         }
-
         this.add(roomPanel);
+        this.pack();
+    }
+
+    private void switchToGame() {
+        if (gamePanel == null) {
+            gamePanel = new GamePanel();
+        }
+        this.add(gamePanel);
         this.pack();
 
     }

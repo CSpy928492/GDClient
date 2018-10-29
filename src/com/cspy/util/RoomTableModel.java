@@ -4,7 +4,7 @@ import javax.swing.table.AbstractTableModel;
 
 public class RoomTableModel extends AbstractTableModel {
 
-    private String[] columnNames = {"房间名","人数","状态"};
+    private String[] columnNames = {"房间号","人数","状态"};   //"房间名"
     private Object[][] data;
 
     public RoomTableModel(Object[][] data) {
