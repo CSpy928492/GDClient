@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.cspy.ClientManager;
 import com.cspy.tools.HttpConnect;
+import com.cspy.util.Room;
 import com.cspy.util.RoomTableModel;
 
 import javax.swing.*;
@@ -99,19 +100,25 @@ public class RoomPanel extends JPanel {
             }
 
             if (e.getSource() == create) {
-                createRoom();
+                Room room = createRoom();
+                ClientManager clientManager = (ClientManager) SwingUtilities.getRoot(create);
+                clientManager.setRoomMessage(room);
                 return;
             }
 
             if (e.getSource() == join) {
                 Object roomNumber = table.getValueAt(table.getSelectedRow(), 0);
                 System.out.println("准备加入" + roomNumber +"号房间");
-                joinRoom((Integer) roomNumber);
+                Room room = joinRoom((Integer) roomNumber);
+                ClientManager clientManager = (ClientManager) SwingUtilities.getRoot(create);
+                clientManager.setRoomMessage(room);
                 return;
             }
 
             if (e.getSource() == auto) {
-                autoJoinRoom();
+                Room room = autoJoinRoom();
+                ClientManager clientManager = (ClientManager) SwingUtilities.getRoot(create);
+                clientManager.setRoomMessage(room);
                 return;
 
             }
@@ -147,16 +154,24 @@ public class RoomPanel extends JPanel {
         return rooms;
     }
 
-    private void createRoom() {
+    private Room createRoom() {
         Map<String, String> params = new HashMap<>();
         params.put("token", ClientManager.clientToken);
         params.put("type", "createRoom");
 
         String resultString = HttpConnect.postConnect("http://localhost:8080/rooms",params);
         System.out.println("result is" + resultString);
+
+        JSONObject jsonObject = JSONObject.parseObject(resultString);
+        if (0 == (Integer) jsonObject.get("state")) {
+            Room room = (Room) jsonObject.get("roomMessage");
+            return room;
+        } else {
+            return null;
+        }
     }
 
-    private void joinRoom(int roomNumber) {
+    private Room joinRoom(int roomNumber) {
         Map<String, String> params = new HashMap<>();
         params.put("token", ClientManager.clientToken);
         params.put("type", "joinRoom");
@@ -164,15 +179,31 @@ public class RoomPanel extends JPanel {
 
         String resultString = HttpConnect.postConnect("http://localhost:8080/rooms",params);
         System.out.println("result is" + resultString);
+
+        JSONObject jsonObject = JSONObject.parseObject(resultString);
+        if (0 == (Integer) jsonObject.get("state")) {
+            Room room = (Room) jsonObject.get("roomMessage");
+            return room;
+        } else {
+            return null;
+        }
     }
 
-    private void autoJoinRoom() {
+    private Room autoJoinRoom() {
         Map<String, String> params = new HashMap<>();
         params.put("token", ClientManager.clientToken);
         params.put("type", "autoJoinRoom");
 
         String resultString = HttpConnect.postConnect("http://localhost:8080/rooms",params);
         System.out.println("result is" + resultString);
+        JSONObject jsonObject = JSONObject.parseObject(resultString);
+
+        if (0 == (Integer) jsonObject.get("state")) {
+            Room room = (Room) jsonObject.get("roomMessage");
+            return room;
+        } else {
+            return null;
+        }
     }
 
 

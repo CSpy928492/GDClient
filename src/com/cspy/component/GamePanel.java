@@ -1,6 +1,7 @@
 package com.cspy.component;
 
 import com.cspy.util.Poke;
+import com.cspy.util.Room;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,7 +10,9 @@ import java.awt.event.MouseEvent;
 import java.util.Collections;
 import java.util.List;
 
-public class GamePanel extends JFrame {
+public class GamePanel extends JPanel {
+
+    Room room;
 
     OtherPanel[] others;
     Dimension mainSize;
@@ -23,10 +26,11 @@ public class GamePanel extends JFrame {
 
 
 
-    public GamePanel() {
+    public GamePanel(Room room) {
+        this.room = room;
         mainSize = new Dimension(1200, 1000);
 
-        pokeSize = new Dimension(90,160);
+        pokeSize = PokePanel.normalBackSize;
         this.setPreferredSize(mainSize);
         this.setLayout(new BorderLayout());
 
@@ -36,14 +40,16 @@ public class GamePanel extends JFrame {
         others = new OtherPanel[3];
 
         System.out.println("初始化面板");
-        others[0] = new OtherPanel(2, p02, 10);
+        others[0] = new OtherPanel(2, p02, 0);
         System.out.println("others0 完成");
-        others[2] = new OtherPanel(2, p02, 10);
+        others[2] = new OtherPanel(2, p02, 0);
         System.out.println("others2 完成");
 
 
         this.add(others[0], BorderLayout.WEST);
-        others[1] = new OtherPanel(1, p1, 10);
+        this.add(others[2], BorderLayout.EAST);
+
+        others[1] = new OtherPanel(1, p1, 0);
         System.out.println("others1 完成");
 
 
@@ -52,7 +58,6 @@ public class GamePanel extends JFrame {
         jp1.add(others[1]);
         this.add(jp1, BorderLayout.NORTH);
 
-        this.add(others[2], BorderLayout.EAST);
 
 
         centerLabel = new JLabel("center");
@@ -79,9 +84,9 @@ public class GamePanel extends JFrame {
         this.add(jp2, BorderLayout.SOUTH);
 
 
-        this.pack();
-        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        this.setVisible(true);
+//        this.pack();
+//        this.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+//        this.setVisible(true);
     }
 
     public void start() {
@@ -136,7 +141,7 @@ public class GamePanel extends JFrame {
         System.out.println("start完成");
     }
 
-    public static void main(String[] args) {
-        new GamePanel();
-    }
+//    public static void main(String[] args) {
+//        new GamePanel();
+//    }
 }
